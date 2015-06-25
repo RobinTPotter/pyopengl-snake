@@ -33,7 +33,7 @@ def MakeLists():
 
     #global lists
     lists["broken brick"] = glGenLists(1)
-    print  "about to compile list"+str(lists["broken brick"])
+    print("about to compile list"+str(lists["broken brick"]))
     glNewList(lists["broken brick"],GL_COMPILE)
 
     glPushMatrix()

@@ -29,23 +29,23 @@ class Joystick:
         print (("hello",self.right))
         
     def isUp(self,keys):
-        if self.up in keys: return keys[self.up]
+        if keys.has_key(self.up): return keys[self.up]
         else: return False
          
     def isDown(self,keys):
-        if self.down in keys: return keys[self.down]
+        if keys.has_key(self.down): return keys[self.down]
         else: return False
          
     def isLeft(self,keys):
-        if self.left in keys: return keys[self.left]
+        if keys.has_key(self.left): return keys[self.left]
         else: return False
          
     def isRight(self,keys):
-        if self.right in keys: return keys[self.right]
+        if keys.has_key(self.right): return keys[self.right]
         else: return False
          
     def isFire(self,keys):
-        if self.fire in keys: return keys[self.fire]
+        if keys.has_key(self.fire): return keys[self.fire]
         else: return False
          
          
@@ -227,7 +227,7 @@ class Testing:
         if drawTime>0:
             self.topFPS=int(1000/(drawTime))
             if int(100*time())%100==0:
-                print(("draw self.TIME "+str(drawTime)+" top FPS "+str(1000/drawTime)))
+                print ("draw self.TIME "+str(drawTime)+" top FPS "+str(1000/drawTime))
                 #self.tcxx,self.tcyy,self.tczz=random.randint(5,14),random.randint(5,14),random.randint(5,14)
         else:
             drawTime=1
@@ -241,7 +241,7 @@ class Testing:
     def __init__(self):
 
         
-        print((bool(glutInit)))
+        print(bool(glutInit))
         glutInit(sys.argv)
         glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH)
         glutInitWindowSize(self.WIDTH,self.HEIGHT)
@@ -439,7 +439,7 @@ class Testing:
     
         if type(c) is int: kk=str(c)
         else: kk=c.lower()
-        if kk in self.keys: self.keys[kk]=False
+        if self.keys.has_key(kk): self.keys[kk]=False
         glutPostRedisplay()
 
 
@@ -456,7 +456,7 @@ class Testing:
             glTranslate(0,0,0.5)
             glColor(colours["black"])
             glLineWidth(3.0)
-            if string[l].upper() in lists: glCallList(lists[string[l].upper()])
+            if lists.has_key(string[l].upper()): glCallList(lists[string[l].upper()])
             else:  glCallList(lists[" "])
             glPopMatrix()
             
@@ -464,7 +464,7 @@ class Testing:
             glTranslate(0,0,0)
             glColor(colours[col])
             glLineWidth(0.5)
-            if string[l].upper() in lists: glCallList(lists[string[l].upper()])
+            if lists.has_key(string[l].upper()): glCallList(lists[string[l].upper()])
             else:  glCallList(lists[" "])
             glPopMatrix()
             glTranslate(14,0,0)
