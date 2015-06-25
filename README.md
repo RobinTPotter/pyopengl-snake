@@ -8,3 +8,5 @@ keys are arrows and space to start.
 snake grows longer all the time, food increases length, snake cam activated periodically, camera flip causes confusion. this is intentional.
 
 if it is not fun, don't play. 
+
+you may need these: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyopengl
