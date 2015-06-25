@@ -46,19 +46,25 @@ class Joystick:
         else: return False
          
     def isFire(self):
-        if self.fire in self.keys: return self.keys[self.fire]
+        if self.fire in self.keys:
+            print("fire!")
+            return self.keys[self.fire]
+            
         else: return False         
          
     def keydownevent(self,c,x,y):
         if type(c) is int: kk=str(c)
-        else: kk=c.lower()
+        else: kk=c.decode('ascii').lower()
+        
+        
+        print("key down",(c,x,y,kk))
         self.keys[kk]=True
         #glutPostRedisplay()
         
     def keyupevent(self,c,x,y):
     
         if type(c) is int: kk=str(c)
-        else: kk=c.lower()
+        else: kk=c.decode('ascii').lower()
         if kk in self.keys: self.keys[kk]=False
         #glutPostRedisplay()
 
