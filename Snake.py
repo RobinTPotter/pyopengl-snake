@@ -12,7 +12,7 @@ import array, struct
 
 X=46.0
 
-name = "testing"
+name = b'testing'
 
 
 
