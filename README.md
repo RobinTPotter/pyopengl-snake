@@ -10,3 +10,5 @@ snake grows longer all the time, food increases length, snake cam activated peri
 if it is not fun, don't play. 
 
 you may need these: http://www.lfd.uci.edu/~gohlke/pythonlibs/#pyopengl
+install them with pip install xxx.whl
+
