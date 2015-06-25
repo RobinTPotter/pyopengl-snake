@@ -19,6 +19,7 @@ name = "testing"
 class Joystick:
     
     up,down,left,right,fire="","","","",""
+    keys={}
 
     def __init__(self,up="q",down="a",left="o",right="p",fire="m"):
         self.up=up
@@ -28,34 +29,45 @@ class Joystick:
         self.fire=fire
         print (("hello",self.right))
         
-    def isUp(self,keys):
-        if self.up in keys: return keys[self.up]
+    def isUp(self):
+        if self.up in self.keys: return self.keys[self.up]
         else: return False
          
-    def isDown(self,keys):
-        if self.down in keys: return keys[self.down]
+    def isDown(self):
+        if self.down in self.keys: return self.keys[self.down]
         else: return False
          
-    def isLeft(self,keys):
-        if self.left in keys: return keys[self.left]
+    def isLeft(self):
+        if self.left in self.keys: return self.keys[self.left]
         else: return False
          
-    def isRight(self,keys):
-        if self.right in keys: return keys[self.right]
+    def isRight(self):
+        if self.right in self.keys: return self.keys[self.right]
         else: return False
          
-    def isFire(self,keys):
-        if self.fire in keys: return keys[self.fire]
-        else: return False
+    def isFire(self):
+        if self.fire in self.keys: return self.keys[self.fire]
+        else: return False         
          
-         
+    def keydownevent(self,c,x,y):
+        if type(c) is int: kk=str(c)
+        else: kk=c.lower()
+        self.keys[kk]=True
+        #glutPostRedisplay()
+        
+    def keyupevent(self,c,x,y):
+    
+        if type(c) is int: kk=str(c)
+        else: kk=c.lower()
+        if kk in self.keys: self.keys[kk]=False
+        #glutPostRedisplay()
+
          
  
  
  
 class Testing:
 
-    keys={}
     SIZE=[50,50]
     SNAKE=[[5,5],[5,4],[5,3],[5,2]]
     DIR=[1,0]
@@ -160,13 +172,13 @@ class Testing:
                 self.FOOD=None
             
             
-            if self.joystick.isUp(self.keys):
+            if self.joystick.isUp():
                 self.DIR=[0,1]
-            elif self.joystick.isDown(self.keys):
+            elif self.joystick.isDown():
                 self.DIR=[0,-1]
-            elif self.joystick.isLeft(self.keys):
+            elif self.joystick.isLeft():
                 self.DIR=[-1,0]
-            elif self.joystick.isRight(self.keys):
+            elif self.joystick.isRight():
                 self.DIR=[1,0]
                           
                 
@@ -177,7 +189,7 @@ class Testing:
             
         else:
         
-            if self.joystick.isFire(self.keys) and self.state==0:
+            if self.joystick.isFire() and self.state==0:
                 self.start()
                 
             if self.TIME % 100==0:
@@ -273,11 +285,11 @@ class Testing:
         
         glutIgnoreKeyRepeat(1)
         
-        glutSpecialFunc(self.keydownevent)
-        glutSpecialUpFunc(self.keyupevent)
+        glutSpecialFunc(self.joystick.keydownevent)
+        glutSpecialUpFunc(self.joystick.keyupevent)
 
-        glutKeyboardFunc(self.keydownevent)
-        glutKeyboardUpFunc(self.keyupevent)
+        glutKeyboardFunc(self.joystick.keydownevent)
+        glutKeyboardUpFunc(self.joystick.keyupevent)
         glutDisplayFunc(self.display)
         #glutIdleFunc(self.display)
         
@@ -287,7 +299,7 @@ class Testing:
         glPushMatrix()
         
         
-        self.initkey("zxdcfvqaopm")
+        ##self.initkey("zxdcfvqaopm")
         
         self.animate()
         
@@ -409,8 +421,8 @@ class Testing:
     def initkey(self,cl):   
     
         for c in cl:
-            self.keydownevent(c,0,0)        
-            self.keyupevent(c,0,0)
+            self.joystick.keydownevent(c,0,0)        
+            self.joystick.keyupevent(c,0,0)
 
     def display(self):
 
@@ -428,19 +440,6 @@ class Testing:
         
         glutSwapBuffers()
         #glFinish()
-
-    def keydownevent(self,c,x,y):
-        if type(c) is int: kk=str(c)
-        else: kk=c.lower()
-        self.keys[kk]=True
-        glutPostRedisplay()
-        
-    def keyupevent(self,c,x,y):
-    
-        if type(c) is int: kk=str(c)
-        else: kk=c.lower()
-        if kk in self.keys: self.keys[kk]=False
-        glutPostRedisplay()
 
 
     def drawString(self,string,col="yellow"):
