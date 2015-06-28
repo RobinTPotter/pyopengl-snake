@@ -438,7 +438,7 @@ class Testing:
                 glTranslate(0,18,0)
                 d="white"
                 if self.TIME % 10<5: d="red"
-                self.drawString("game over  space to start",col=d)
+                self.drawString("game over - space to start.",col=d)
 
 
 
