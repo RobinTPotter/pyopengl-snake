@@ -1,4 +1,4 @@
-#!/bin/python
+#!/usr/bin/python
 from OpenGL import *
 from OpenGL.GLUT import *
 from OpenGL.GLU import *
@@ -73,7 +73,7 @@ class Testing:
 
     SIZE=[50,50]
     SNAKE=[[5,5],[5,4],[5,3],[5,2]]
-    DIR=[1,0]
+    DIR=[0,1]
     TIME=0
     
     WIDTH=640
@@ -112,7 +112,7 @@ class Testing:
     snake_cam_max=300
     snake_cam_min=100    
     snake_cam_warn=100
-    
+    OK_press=0
     
     def start(self):
     
@@ -121,12 +121,14 @@ class Testing:
         self.POINTS=0
         self.SIZE=[50,50]
         self.SNAKE=[[5,5],[5,4],[5,3],[5,2]]
-        self.DIR=[1,0]
+        self.DIR=[0,1]
         self.TIME=1
         self.state=1
             
         self.snake_cam=0
         self.reset_cam()
+        
+        self.OK_press=0
         
         global X
         X=0
@@ -172,19 +174,35 @@ class Testing:
             
             if self.FOOD[0]==self.SNAKE[0][0] and self.FOOD[1]==self.SNAKE[0][1]:
                 self.POINTS+=1
+                if self.snake_cam>0: self.POINTS+=1
                 self.FOOD=None
             
-            
-            if self.joystick.isUp():
-                self.DIR=[0,1]
-            elif self.joystick.isDown():
-                self.DIR=[0,-1]
-            elif self.joystick.isLeft():
-                self.DIR=[-1,0]
-            elif self.joystick.isRight():
-                self.DIR=[1,0]
-                          
+            if self.OK_press==0:
                 
+                if self.snake_cam==0:
+                    if self.joystick.isUp():
+                        self.DIR=[0,1]
+                    elif self.joystick.isDown():
+                        self.DIR=[0,-1]
+                    elif self.joystick.isLeft():
+                        self.DIR=[-1,0]
+                    elif self.joystick.isRight():
+                        self.DIR=[1,0]
+                        
+                else:
+                    if self.joystick.isLeft():
+                        tmp=[-self.DIR[1],self.DIR[0]]
+                        self.DIR=tmp
+                        self.OK_press=2
+                    elif self.joystick.isRight():
+                        tmp=[self.DIR[1],-self.DIR[0]]
+                        self.DIR=tmp
+                        self.OK_press=2
+                    
+            else:
+                self.OK_press-=1
+                    
+                    
             self.ftx=self.SNAKE[0][0]
             self.fty=self.SNAKE[0][1]
             self.ftz=self.ftz
@@ -221,6 +239,7 @@ class Testing:
             
             if self.snake_cam==0:
                 self.reset_cam()
+                self.snake_cam_max=self.TIME+200 
                 
             else:
                 self.ctx,self.cty,self.ctz=self.SNAKE[0][0]-2*self.DIR[0],self.SNAKE[0][1]-2*self.DIR[1],2
@@ -231,8 +250,8 @@ class Testing:
         
 
         
-        #self.cxx=self.cxx+(self.SNAKE[0][0]-self.cxx)/50
-        #self.cyy=self.cyy+(self.SNAKE[0][1]-self.cyy)/50                 
+        #self.cxx=self.cxx+(self.SNAKE[0][0]-self.cxx)/30
+        #self.cyy=self.cyy+(self.SNAKE[0][1]-self.cyy)/30                 
     
         glutPostRedisplay()
         
@@ -287,6 +306,8 @@ class Testing:
         MakeLists()
         
         glutIgnoreKeyRepeat(1)
+
+        glutReshapeFunc(self.reshape)
         
         glutSpecialFunc(self.joystick.keydownevent)
         glutSpecialUpFunc(self.joystick.keyupevent)
@@ -310,6 +331,17 @@ class Testing:
 
         return
 
+    def reshape(self,width,height):
+        print "hello reshape "+str((width,height))
+        self.HEIGHT=float(height)
+        self.WIDTH=float(width)
+        glViewport(0,0,int(self.WIDTH),int(self.HEIGHT)        )
+        glMatrixMode(GL_PROJECTION)
+        glLoadIdentity()
+        gluPerspective(60.0,self.WIDTH/self.HEIGHT,1.,50.)
+        glMatrixMode(GL_MODELVIEW)
+        #glPushMatrix()
+        glLoadIdentity()
 
 
 
@@ -391,9 +423,7 @@ class Testing:
             glLoadIdentity()
             
             glDisable(GL_DEPTH_TEST)  
-            
-            #glScale(self.WIDTH/640.0,self.WIDTH/640.0,1)
-            
+                        
             textOn=True
             #if self.X %2 == 0: textOn=False
             
