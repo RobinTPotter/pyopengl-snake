@@ -1,0 +1,104 @@
+[33mcommit b40ab4bbdec57e5573c6ad4fb00f23d2c9d62edd[m
+Merge: 769b863 1f6c2db
+Author: deadmeat <robin.t.potter@googlemail.com>
+Date:   Sun Jun 28 22:04:16 2015 +0100
+
+    Merge branch 'master' of https://github.com/RobinTPotter/pyopengl-snake
+    
+    updted the readme whilst uncommited local
+
+[33mcommit 769b863faebb316f2cb62aa01693ee5f451f841d[m
+Author: deadmeat <robin.t.potter@googlemail.com>
+Date:   Sun Jun 28 22:03:36 2015 +0100
+
+    letters tweak
+
+[33mcommit 1f6c2db271f6af44f0def213ff55113991c83085[m
+Author: Robin Potter <robin.t.potter@googlemail.com>
+Date:   Sun Jun 28 21:53:20 2015 +0100
+
+    Update README.md
+
+[33mcommit 049430d30819ccaa5e63dfd17b237f4fc58217f9[m
+Author: deadmeat <robin.t.potter@googlemail.com>
+Date:   Sun Jun 28 21:46:52 2015 +0100
+
+    reshape snake-cam left right only
+
+[33mcommit f13986c6a07e516d6f35939cec272313ca5f3f9e[m
+Author: Robin Potter <robin.potter@experian.com>
+Date:   Thu Jun 25 15:03:38 2015 +0100
+
+    odd behaviour for p3 with its binary string nonesense
+
+[33mcommit f7df7a55066c6810358b3ea189a9ed5e88f1bc6e[m
+Author: Robin Potter <robin.potter@experian.com>
+Date:   Thu Jun 25 15:02:44 2015 +0100
+
+    odd behaviour for p3 with its binary string nonesense
+
+[33mcommit de3b3ac2b77a48a61a946a96be290a06ecda012e[m
+Author: Robin Potter <robin.potter@experian.com>
+Date:   Thu Jun 25 14:56:46 2015 +0100
+
+    remembered to change title to binary string
+
+[33mcommit 3c3794ed4ae65a2faaf3d40b39299b20e549a379[m
+Author: Robin Potter <robin.potter@experian.com>
+Date:   Thu Jun 25 14:33:19 2015 +0100
+
+    objectified joystick
+
+[33mcommit 9399bcb53085147f391b2bc562cafb26e69b56a5[m
+Author: Robin Potter <robin.potter@experian.com>
+Date:   Thu Jun 25 13:57:50 2015 +0100
+
+    xx
+
+[33mcommit 24673ea943425cc5b805e08da938928d45f2908a[m
+Author: Robin Potter <robin.potter@experian.com>
+Date:   Thu Jun 25 13:54:51 2015 +0100
+
+    x
+
+[33mcommit 5b5ee52068fc2bb1ac15e429fecac68aeaa6e630[m
+Author: Robin Potter <robin.potter@experian.com>
+Date:   Thu Jun 25 13:51:01 2015 +0100
+
+    alterations to make programs 3.x ready
+
+[33mcommit 4d6ce1fc6592227cb8eebc48b659cb2f3ca90033[m
+Author: Robin Potter <robin.potter@experian.com>
+Date:   Thu Jun 25 13:49:39 2015 +0100
+
+    alterations to make programs 3.x ready
+
+[33mcommit fda9128af105b1c3a46926880571ce3ac5911264[m
+Author: Robin Potter <robin.t.potter@googlemail.com>
+Date:   Thu Jun 25 13:38:17 2015 +0100
+
+    Update README.md
+
+[33mcommit c10871e21919a11772bbf04caa5cbd7748e643c0[m
+Author: Robin Potter <robin.t.potter@googlemail.com>
+Date:   Thu Jun 25 13:37:24 2015 +0100
+
+    Update README.md
+
+[33mcommit f42550f095ec78b29af907f3f1911fc1e0fa1b73[m
+Author: Robin Potter <robin.t.potter@googlemail.com>
+Date:   Thu Jun 25 12:56:30 2015 +0100
+
+    Update README.md
+
+[33mcommit 51f4bcde600d542702a82989c8c508d50b7a6704[m
+Author: Robin Potter <robin.potter@experian.com>
+Date:   Thu Jun 25 12:44:33 2015 +0100
+
+    classic snake in one level of pyopengl
+
+[33mcommit ed09f4b56c7adba2aa4f2721b250f50f80e3eb66[m
+Author: Robin Potter <robin.t.potter@googlemail.com>
+Date:   Thu Jun 25 12:39:33 2015 +0100
+
+    Initial commit

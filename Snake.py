@@ -69,6 +69,35 @@ class Joystick:
  
  
  
+class BarrierGrowth:    
+
+    def __init__(self,barrierset,x=5,y=5,t=50,dx=1,dy=0,len=10,speed=10):
+    
+        self.barrierset=barrierset
+        self.seed=[x,y]
+        self.dir=[dx,dy]
+        self.len=len
+        self.timestart=t
+        self.speedmod=speed
+        self.timeup=len*speed+t
+        self.currentlen=0
+        
+    def go(self,nowtime):
+        
+        if nowtime % self.speedmod==0:
+        
+            self.barrierset.append([self.seed[0]+self.dir[0]*self.currentlen,self.seed[1]+self.dir[1]*self.currentlen])
+            self.currentlen+=1
+            
+        if nowtime>self.timeup: return False
+        
+        return True
+            
+        
+   
+ 
+ 
+ 
 class Testing:
 
     SIZE=[50,50]
@@ -97,7 +126,7 @@ class Testing:
     ctx,cty,ctz=SIZE[0]/2,SIZE[1]/2,50
     ftx,fty,ftz=SIZE[0]/2,SIZE[1]/2,0
     
-    
+    LEVEL=[]
     
     lock=False
     lastFrameTime=0
@@ -114,7 +143,24 @@ class Testing:
     snake_cam_warn=100
     OK_press=0
     
+    barriergrowers=[]
+    
     def start(self):
+    
+    
+        self.LEVEL=[]
+    
+        for xx in range(-1,self.SIZE[0]+2):
+            self.LEVEL.append([xx,-1])
+            self.LEVEL.append([xx,self.SIZE[1]+1])
+            
+            
+        for yy in range(-1,self.SIZE[1]+2):
+            self.LEVEL.append([-1,yy])
+            self.LEVEL.append([self.SIZE[0]+1,yy])
+            
+            
+        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=5,y=5,t=50,dx=1,dy=0,len=10,speed=10))
     
         self.ctz=abs(self.ctz)
         self.FOOD=None
@@ -147,13 +193,21 @@ class Testing:
         
         self.TIME+=1
         
+        
+        
         if self.state==1:
         
-            
+            '''
             test=0
             for s in self.SNAKE[1:]:
                 if s==self.SNAKE[0]:
                     self.Dead()
+                    
+            for b in self.LEVEL:
+                if b==self.SNAKE[0]:
+                    self.Dead()
+                        
+            '''            
                         
             if self.TIME % self.GROWTH_FREQUENCY != 0 or self.Eaten==False: self.SNAKE.pop() #gets rid of last blob (if required)
             
@@ -165,12 +219,34 @@ class Testing:
             
             xxxx=len(self.SNAKE)-1        
             
-            if self.SNAKE[0][0]>self.SIZE[0] or self.SNAKE[0][0]<0 or self.SNAKE[0][1]>self.SIZE[1] or self.SNAKE[0][1]<0:
-                self.Dead()
+            #if self.SNAKE[0][0]>self.SIZE[0] or self.SNAKE[0][0]<0 or self.SNAKE[0][1]>self.SIZE[1] or self.SNAKE[0][1]<0:
+            #    self.Dead()
                 
             if self.FOOD==None:
-                self.FOOD=[int(random.random()*self.SIZE[0]),int(random.random()*self.SIZE[1])]
             
+                testing=False            
+                fx,fy=0,0
+                
+                while testing==False:   
+
+                    testing=True
+                
+                    fx=int(random.random()*self.SIZE[0])
+                    fy=int(random.random()*self.SIZE[1])
+                                        
+                                
+                    for s in self.SNAKE:
+                        if s==[fx,fy]:
+                            testing=False
+                            
+                    for b in self.LEVEL:
+                        if b==[fx,fy]:
+                            testing=False
+                                
+                    
+                    
+                self.FOOD=[fx,fy]
+                
             
             if self.FOOD[0]==self.SNAKE[0][0] and self.FOOD[1]==self.SNAKE[0][1]:
                 self.POINTS+=1
@@ -208,6 +284,24 @@ class Testing:
             self.ftz=self.ftz
             
             
+            
+            test=0
+            for s in self.SNAKE[1:]:
+                if s==self.SNAKE[0]:
+                    self.Dead()
+                    
+            for b in self.LEVEL:
+                if b==self.SNAKE[0]:
+                    self.Dead()
+                        
+                        
+            for bg in self.barriergrowers:
+                if bg.timestart<self.TIME:
+                    res=bg.go(self.TIME)
+                    if res==False:
+                        self.barriergrowers.remove(bg)
+                        
+                        
         else:
         
             if self.joystick.isFire() and self.state==0:
@@ -373,6 +467,8 @@ class Testing:
             
             glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["white"])
             
+            
+            '''
             #glBegin(GL_POINTS)
             for x in range(-1,self.SIZE[0]+2):
                 for y in range(-1,self.SIZE[1]+2):
@@ -383,7 +479,17 @@ class Testing:
                         #print (x,y)
                         glutSolidCube(0.9)
                         glPopMatrix()
-                    
+            '''        
+            
+            for b in self.LEVEL:
+                #print (b)
+                glPushMatrix()
+                glTranslate(b[0],b[1],0)
+                glutSolidCube(0.9)
+                glPopMatrix()
+      
+              
+              
               
             #glEnd()
             #glPopMatrix()
