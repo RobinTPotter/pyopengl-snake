@@ -82,11 +82,13 @@ class BarrierGrowth:
         self.timeup=len*speed+t
         self.currentlen=0
         
-    def go(self,nowtime):
+    def go(self,nowtime,food,set_food_none_callback):
         
         if nowtime % self.speedmod==0:
         
-            self.barrierset.append([self.seed[0]+self.dir[0]*self.currentlen,self.seed[1]+self.dir[1]*self.currentlen])
+            br=[self.seed[0]+self.dir[0]*self.currentlen,self.seed[1]+self.dir[1]*self.currentlen]
+            if br==food: set_food_none_callback()
+            self.barrierset.append(br)
             self.currentlen+=1
             
         if nowtime>self.timeup: return False
@@ -101,7 +103,7 @@ class BarrierGrowth:
 class Testing:
 
     SIZE=[50,50]
-    SNAKE=[[5,5],[5,4],[5,3],[5,2]]
+    SNAKE=[[25,25],[25,24],[25,23],[25,22]]
     DIR=[0,1]
     TIME=0
     
@@ -119,11 +121,13 @@ class Testing:
     fox,foy,foz=0,1,0
     
     
+    COUNT_DOWN=0
+    
     rcxx,rcyy,rczz=SIZE[0]/2,SIZE[1]/2,40
     rfxx,rfyy,rfzz=SIZE[0]/2,SIZE[1]/2,0
     rox,roy,roz=0,1,0
     
-    ctx,cty,ctz=SIZE[0]/2,SIZE[1]/2,50
+    ctx,cty,ctz=SIZE[0]/2,SIZE[1]/2,60
     ftx,fty,ftz=SIZE[0]/2,SIZE[1]/2,0
     
     LEVEL=[]
@@ -150,6 +154,7 @@ class Testing:
     
         self.LEVEL=[]
     
+        '''
         for xx in range(-1,self.SIZE[0]+2):
             self.LEVEL.append([xx,-1])
             self.LEVEL.append([xx,self.SIZE[1]+1])
@@ -158,15 +163,30 @@ class Testing:
         for yy in range(-1,self.SIZE[1]+2):
             self.LEVEL.append([-1,yy])
             self.LEVEL.append([self.SIZE[0]+1,yy])
+        '''
+
+    
+        self.COUNT_DOWN=5
+            
+        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=-1,y=self.SIZE[1],t=0,dx=0,dy=-1,len=self.SIZE[1]+1,speed=1))
+        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=self.SIZE[0]+1,y=0,t=10,dx=0,dy=1,len=self.SIZE[1]+1,speed=1))
+        
+        self.barriergrowers.append(BarrierGrowth(self.LEVEL,y=-1,x=self.SIZE[0],t=0,dx=-1,dy=0,len=self.SIZE[0]+1,speed=1))
+        self.barriergrowers.append(BarrierGrowth(self.LEVEL,y=self.SIZE[1]+1,x=0,t=10,dx=1,dy=0,len=self.SIZE[0]+1,speed=1))
+    
             
             
-        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=5,y=5,t=50,dx=1,dy=0,len=10,speed=10))
+        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=self.SIZE[0]-5,y=self.SIZE[1]-5,t=80,dx=-1,dy=0,len=20,speed=10))
+        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=5,y=5,t=80,dx=1,dy=0,len=20,speed=10))
+            
+        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=self.SIZE[0]-15,y=self.SIZE[1]-15,t=180,dx=-1,dy=0,len=30,speed=5))
+        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=15,y=15,t=180,dx=1,dy=0,len=30,speed=5))
     
         self.ctz=abs(self.ctz)
         self.FOOD=None
         self.POINTS=0
         self.SIZE=[50,50]
-        self.SNAKE=[[5,5],[5,4],[5,3],[5,2]]
+        self.SNAKE=[[25,25],[25,24],[25,23],[25,22]]
         self.DIR=[0,1]
         self.TIME=1
         self.state=1
@@ -208,96 +228,103 @@ class Testing:
                     self.Dead()
                         
             '''            
-                        
-            if self.TIME % self.GROWTH_FREQUENCY != 0 or self.Eaten==False: self.SNAKE.pop() #gets rid of last blob (if required)
             
-            
-        
-            self.SNAKE.insert(0,[self.SNAKE[0][0]+self.DIR[0],self.SNAKE[0][1]+self.DIR[1]])
-            
-            if self.Eaten==True: self.Eaten=False
-            
-            xxxx=len(self.SNAKE)-1        
-            
-            #if self.SNAKE[0][0]>self.SIZE[0] or self.SNAKE[0][0]<0 or self.SNAKE[0][1]>self.SIZE[1] or self.SNAKE[0][1]<0:
-            #    self.Dead()
+            if self.COUNT_DOWN==0:
                 
-            if self.FOOD==None:
-            
-                testing=False            
-                fx,fy=0,0
-                
-                while testing==False:   
-
-                    testing=True
-                
-                    fx=int(random.random()*self.SIZE[0])
-                    fy=int(random.random()*self.SIZE[1])
-                                        
-                                
-                    for s in self.SNAKE:
-                        if s==[fx,fy]:
-                            testing=False
                             
-                    for b in self.LEVEL:
-                        if b==[fx,fy]:
-                            testing=False
+                if self.TIME % self.GROWTH_FREQUENCY != 0 or self.Eaten==False: self.SNAKE.pop() #gets rid of last blob (if required)
+                
+                
+            
+                self.SNAKE.insert(0,[self.SNAKE[0][0]+self.DIR[0],self.SNAKE[0][1]+self.DIR[1]])
+                
+                if self.Eaten==True: self.Eaten=False
+                
+                xxxx=len(self.SNAKE)-1        
+                
+                #if self.SNAKE[0][0]>self.SIZE[0] or self.SNAKE[0][0]<0 or self.SNAKE[0][1]>self.SIZE[1] or self.SNAKE[0][1]<0:
+                #    self.Dead()
+                    
+                if self.FOOD==None:
+                
+                    testing=False            
+                    fx,fy=0,0
+                    
+                    while testing==False:   
+
+                        testing=True
+                    
+                        fx=int(random.random()*self.SIZE[0])
+                        fy=int(random.random()*self.SIZE[1])
+                                            
+                                    
+                        for s in self.SNAKE:
+                            if s==[fx,fy]:
+                                testing=False
                                 
+                        for b in self.LEVEL:
+                            if b==[fx,fy]:
+                                testing=False
+                                    
+                        
+                        
+                    self.FOOD=[fx,fy]
                     
+                
+                if self.FOOD[0]==self.SNAKE[0][0] and self.FOOD[1]==self.SNAKE[0][1]:
+                    self.POINTS+=1
+                    if self.snake_cam>0: self.POINTS+=1
+                    self.FOOD=None
+                
+                if self.OK_press==0:
                     
-                self.FOOD=[fx,fy]
-                
-            
-            if self.FOOD[0]==self.SNAKE[0][0] and self.FOOD[1]==self.SNAKE[0][1]:
-                self.POINTS+=1
-                if self.snake_cam>0: self.POINTS+=1
-                self.FOOD=None
-            
-            if self.OK_press==0:
-                
-                if self.snake_cam==0:
-                    if self.joystick.isUp():
-                        self.DIR=[0,1]
-                    elif self.joystick.isDown():
-                        self.DIR=[0,-1]
-                    elif self.joystick.isLeft():
-                        self.DIR=[-1,0]
-                    elif self.joystick.isRight():
-                        self.DIR=[1,0]
+                    if self.snake_cam==0:
+                        if self.joystick.isUp():
+                            self.DIR=[0,1]
+                        elif self.joystick.isDown():
+                            self.DIR=[0,-1]
+                        elif self.joystick.isLeft():
+                            self.DIR=[-1,0]
+                        elif self.joystick.isRight():
+                            self.DIR=[1,0]
+                            
+                    else:
+                        if self.joystick.isLeft():
+                            tmp=[-self.DIR[1],self.DIR[0]]
+                            self.DIR=tmp
+                            self.OK_press=2
+                        elif self.joystick.isRight():
+                            tmp=[self.DIR[1],-self.DIR[0]]
+                            self.DIR=tmp
+                            self.OK_press=2
                         
                 else:
-                    if self.joystick.isLeft():
-                        tmp=[-self.DIR[1],self.DIR[0]]
-                        self.DIR=tmp
-                        self.OK_press=2
-                    elif self.joystick.isRight():
-                        tmp=[self.DIR[1],-self.DIR[0]]
-                        self.DIR=tmp
-                        self.OK_press=2
-                    
-            else:
-                self.OK_press-=1
-                    
-                    
-            self.ftx=self.SNAKE[0][0]
-            self.fty=self.SNAKE[0][1]
-            self.ftz=self.ftz
-            
-            
-            
-            test=0
-            for s in self.SNAKE[1:]:
-                if s==self.SNAKE[0]:
-                    self.Dead()
-                    
-            for b in self.LEVEL:
-                if b==self.SNAKE[0]:
-                    self.Dead()
+                    self.OK_press-=1
+                        
+                        
+                self.ftx=self.SNAKE[0][0]
+                self.fty=self.SNAKE[0][1]
+                self.ftz=self.ftz
+                
+                
+                
+                test=0
+                for s in self.SNAKE[1:]:
+                    if s==self.SNAKE[0]:
+                        self.Dead()
+                        
+                for b in self.LEVEL:
+                    if b==self.SNAKE[0]:
+                        self.Dead()
+                            
+            else:                
+                if self.TIME % 7 ==0: self.COUNT_DOWN-=1
+                        
                         
                         
             for bg in self.barriergrowers:
                 if bg.timestart<self.TIME:
-                    res=bg.go(self.TIME)
+                    res=bg.go(self.TIME,self.FOOD,self.set_food_none_callback)
                     if res==False:
                         self.barriergrowers.remove(bg)
                         
@@ -362,6 +389,9 @@ class Testing:
             
 
         self.lastFrameTime=time()
+
+    def set_food_none_callback(self):
+        self.FOOD=None
 
     def Dead(self):
         self.state=0
@@ -539,6 +569,16 @@ class Testing:
 
             glTranslate(2,2,0)
             self.drawString("SCORE: "+str(self.POINTS)) ##+" sanke cam: "+str(self.snake_cam)+" TIME: "+str(self.TIME))
+            
+            
+            if self.COUNT_DOWN>0:
+                d="yellow"
+                if self.TIME % 2<1: d="red"
+                glPushMatrix()
+                glTranslate(self.WIDTH/2-25,self.HEIGHT/2-25,0)
+                glScale(5,5,0)
+                self.drawString(str(self.COUNT_DOWN),col=d)
+                glPopMatrix()
             
             if self.state==0:                
                 glTranslate(0,18,0)
