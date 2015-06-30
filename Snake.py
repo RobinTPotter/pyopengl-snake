@@ -456,7 +456,7 @@ class Testing:
         return
 
     def reshape(self,width,height):
-        print "hello reshape "+str((width,height))
+        print("hello reshape "+str((width,height)))
         self.HEIGHT=float(height)
         self.WIDTH=float(width)
         glViewport(0,0,int(self.WIDTH),int(self.HEIGHT)        )
