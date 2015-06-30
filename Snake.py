@@ -123,11 +123,11 @@ class Testing:
     
     COUNT_DOWN=0
     
-    rcxx,rcyy,rczz=SIZE[0]/2,SIZE[1]/2,40
+    rcxx,rcyy,rczz=SIZE[0]/2,SIZE[1]/2,50
     rfxx,rfyy,rfzz=SIZE[0]/2,SIZE[1]/2,0
     rox,roy,roz=0,1,0
     
-    ctx,cty,ctz=SIZE[0]/2,SIZE[1]/2,60
+    ctx,cty,ctz=SIZE[0]/2,SIZE[1]/2,50
     ftx,fty,ftz=SIZE[0]/2,SIZE[1]/2,0
     
     LEVEL=[]
@@ -176,11 +176,20 @@ class Testing:
     
             
             
-        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=self.SIZE[0]-5,y=self.SIZE[1]-5,t=80,dx=-1,dy=0,len=20,speed=10))
-        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=5,y=5,t=80,dx=1,dy=0,len=20,speed=10))
+        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=self.SIZE[0]-5,y=self.SIZE[1]-5,          t=320,dx=-1,dy=0,len=20,speed=10))
+        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=5,y=5,                                    t=320,dx=1,dy=0,len=20,speed=10))
             
-        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=self.SIZE[0]-15,y=self.SIZE[1]-15,t=180,dx=-1,dy=0,len=30,speed=5))
-        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=15,y=15,t=180,dx=1,dy=0,len=30,speed=5))
+        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=self.SIZE[0]-15,y=self.SIZE[1]-15,        t=660,dx=-1,dy=0,len=30,speed=5))
+        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=15,y=15,                                  t=660,dx=1,dy=0,len=30,speed=5))
+    
+        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=self.SIZE[0]-20,y=self.SIZE[1]-30,        t=940,dx=0,dy=1,len=10,speed=5))
+        self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=20,y=30,                                  t=940,dx=0,dy=-1,len=10,speed=5))
+    
+    
+    
+    
+    
+    
     
         self.ctz=abs(self.ctz)
         self.FOOD=None
@@ -352,7 +361,7 @@ class Testing:
         self.cyy=self.cyy+(self.cty-self.cyy)/10.0
         self.czz=self.czz+(self.ctz-self.czz)/10.0
         
-        if self.TIME % 200 < self.snake_cam_max and self.snake_cam==0 and self.TIME>self.snake_cam_max:
+        if self.TIME % 500==0 and self.snake_cam==0 and self.TIME>self.snake_cam_max:
             self.snake_cam=self.snake_cam_max
             
         if self.snake_cam>0:
@@ -360,7 +369,7 @@ class Testing:
             
             if self.snake_cam==0:
                 self.reset_cam()
-                self.snake_cam_max=self.TIME+200 
+                self.snake_cam_max=self.TIME+500 
                 
             else:
                 self.ctx,self.cty,self.ctz=self.SNAKE[0][0]-2*self.DIR[0],self.SNAKE[0][1]-2*self.DIR[1],2
@@ -401,7 +410,16 @@ class Testing:
         
         print((bool(glutInit)))
         glutInit(sys.argv)
-        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH)
+       # glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH)
+        
+        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH | GLUT_MULTISAMPLE)
+        glEnable(GL_MULTISAMPLE)
+    
+        glClear (GL_COLOR_BUFFER_BIT)
+        glEnable (GL_BLEND)
+        glEnable (GL_POLYGON_SMOOTH)
+        glDisable (GL_DEPTH_TEST)
+        
         glutInitWindowSize(self.WIDTH,self.HEIGHT)
         glutCreateWindow(name)
         
@@ -449,6 +467,7 @@ class Testing:
         
         ##self.initkey("zxdcfvqaopm")
         
+        self.reset_cam()
         self.animate()
         
         glutMainLoop()
@@ -568,7 +587,7 @@ class Testing:
             glDisable(GL_LIGHTING)
 
             glTranslate(2,2,0)
-            self.drawString("SCORE: "+str(self.POINTS)) ##+" sanke cam: "+str(self.snake_cam)+" TIME: "+str(self.TIME))
+            self.drawString("SCORE: "+str(self.POINTS)+"  TIME: "+str(self.TIME)) ##+" sanke cam: "+str(self.snake_cam)+" TIME: "+str(self.TIME))
             
             
             if self.COUNT_DOWN>0:
