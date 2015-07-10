@@ -413,17 +413,16 @@ class Testing:
         glEnable(GL_DEPTH_TEST)
         glDepthFunc(GL_LEQUAL)
         
-        # // track material ambient and diffuse from surface color, call it before glEnable(GL_COLOR_MATERIAL)
-        #glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE)
-        #glEnable(GL_COLOR_MATERIAL)
-            
+        
+        
+        
         glEnable(GL_LIGHTING)
         lightZeroPosition = [0,0,5]
-        lightZeroColor = [0.9,1.0,0.9,1.0] #green tinged
+        lightZeroColor = [1.0,1.0,1.0,1.0] #green tinged
         glLightfv(GL_LIGHT0, GL_POSITION, lightZeroPosition)
         glLightfv(GL_LIGHT0, GL_DIFFUSE, lightZeroColor)
-        glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.2)
-        glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.05)
+        glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1)
+        glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.02)
         glEnable(GL_LIGHT0)
         
         
@@ -504,8 +503,6 @@ class Testing:
         
         try:
         
-        
-
             glMatrixMode(GL_PROJECTION)
             glLoadIdentity()
             gluPerspective(60.0,self.WIDTH/self.HEIGHT,0.001,100.0)
@@ -521,46 +518,33 @@ class Testing:
                       self.fxx,self.fyy,self.fzz,
                       self.fox,self.foy,self.foz)
                 
-            #glTranslate(-25,-25,-35)
+                
+            # // track material ambient and diffuse from surface color, call it before glEnable(GL_COLOR_MATERIAL)
+            glColorMaterial(GL_FRONT, GL_AMBIENT_AND_DIFFUSE)
+            glEnable(GL_COLOR_MATERIAL)
+            #glColor(1,1,1,1)
             
-            #glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["white"])
+            glMaterialfv(GL_FRONT,GL_AMBIENT_AND_DIFFUSE,colours["red"])
             
-            
-            '''
-            #glBegin(GL_POINTS)
-            for x in range(-1,self.SIZE[0]+2):
-                for y in range(-1,self.SIZE[1]+2):
-                    if x==-1 or y==-1 or x==self.SIZE[0]+1 or y==self.SIZE[1]+1:
-                        #glVertex3f(x,y,0)
-                        glPushMatrix()
-                        glTranslate(x,y,0)
-                        #print (x,y)
-                        glutSolidCube(0.9)
-                        glPopMatrix()
-            '''        
-            
+            glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,colours["cyan"])
+    
             for b in self.LEVEL:
                 #print (b)
                 glPushMatrix()
                 glTranslate(b[0],b[1],0)
                 glutSolidCube(0.9)
                 glPopMatrix()
+
       
+            glMaterialfv(GL_FRONT_AND_BACK,GL_AMBIENT_AND_DIFFUSE,colours["yellow"])
               
-              
-              
-            #glEnd()
-            #glPopMatrix()
-            
             if self.FOOD!=None:
                 glPushMatrix()
-                #glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["yellow"])
                 glTranslate(self.FOOD[0],self.FOOD[1],0)
                 glutSolidSphere(0.5,8,8)
                 glPopMatrix()
                 self.Eaten=True
         
-    
         
             num=0
             snoffset=0
@@ -573,10 +557,10 @@ class Testing:
             
                 glPushMatrix()
                 glTranslate(s[0],s[1],0)
-                #if num==0:
-                #    glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["red"])
-                #else:
-                #    glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["green"])
+                if num==0:
+                    glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["red"])
+                else:
+                    glMaterialfv(GL_FRONT,GL_DIFFUSE,colours["green"])
                 
                 #glutSolidCube(0.9)
                 
@@ -632,7 +616,15 @@ class Testing:
                 glPopMatrix()
                 num+=1
             
+            
+                
+                
+            cc=glGetFloatv(GL_CURRENT_COLOR)
+                
+                
             X+=3
+            
+            
 
 
 
@@ -670,7 +662,8 @@ class Testing:
                 if self.TIME % 10<5: d="red"
                 self.drawString("game over - space to start.",col=d)
 
-
+            
+            glColor(cc)
 
 
 
@@ -708,13 +701,14 @@ class Testing:
     def drawString(self,string,col="yellow"):
         glPushMatrix()
 
+
         for l in range(0,len(string)):
             
             if string[l].upper()=="#":
                 if len(string[l:])>2:
                     if string[l:l+3]=="###": break
             
-            '''
+            
             glPushMatrix()
             glTranslate(0,0,0.5)
             glColor(colours["black"])
@@ -722,16 +716,18 @@ class Testing:
             if string[l].upper() in lists: glCallList(lists[string[l].upper()])
             else:  glCallList(lists[" "])
             glPopMatrix()
-            '''
+            
             
             glPushMatrix()
             glTranslate(0,0,0)
-            #glColor(colours[col])
+            glColor(colours[col])
             glLineWidth(0.5)
             if string[l].upper() in lists: glCallList(lists[string[l].upper()])
             else:  glCallList(lists[" "])
             glPopMatrix()
             glTranslate(14,0,0)
+
+
 
         glPopMatrix()
 
