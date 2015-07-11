@@ -332,10 +332,14 @@ class Testing:
         
             if self.joystick.isFire() and self.state==0:
                 self.start()
+
+            #print(self.TIME)
                 
-            if self.TIME % 100==0:
-                self.ftx=random.random()*self.SIZE[0]
-                self.fty=random.random()*self.SIZE[1]
+            if self.TIME % 50==0:
+                print("tick")
+                self.ctx=random.random()*self.SIZE[0]
+                self.cty=random.random()*self.SIZE[1]
+                self.ctz=random.random()*5+2
                                
                 
                 
@@ -566,45 +570,44 @@ class Testing:
                 
                 #print(("num",num))
                 middle=int(len(self.SNAKE)/2)
+
+                a=0
+                if d==[0,1]: a=90
+                if d==[0,-1]: a=-90
+                if d==[-1,0]: a=180
                 
                 if num==0:
                     glPushMatrix()
+                    glRotate(a,0,0,1)
                     glScale(0.5,0.5,0.5)
-                    glRotate(90,0,0,1)    
-                    glRotate(d[1]*180-d[0]*90,0,0,1)
                     glTranslate(-4,0,0)
                     self.cheapModel[0].drawMe()         
                     glPopMatrix()
                 elif num<middle:
                     glPushMatrix()
+                    glRotate(a,0,0,1)
                     glScale(0.5,0.5,0.5)
-                    glRotate(90,0,0,1)
-                    glRotate(d[1]*180-d[0]*90,0,0,1)
                     glTranslate(-2,0,0)
                     self.cheapModel[1].drawMe()         
                     glPopMatrix()    
                 elif num==middle:
                     glPushMatrix()
+                    glRotate(a,0,0,1)
                     glScale(0.5,0.5,0.5)
-                    glRotate(90,0,0,1)
-                    glRotate(d[1]*180-d[0]*90,0,0,1)
                     glTranslate(0,0,0)
                     self.cheapModel[2].drawMe()         
                     glPopMatrix()   
                 elif num==len(self.SNAKE)-1:
                     glPushMatrix()
+                    glRotate(a,0,0,1)
                     glScale(0.5,0.5,0.5)
-                    if d[1]!=1: glRotate(90,0,0,1)
-                    else: glRotate(-90,0,0,1)
-                    glRotate(d[1]*180-d[0]*90,0,0,1)
                     glTranslate(4,0,0)
                     self.cheapModel[4].drawMe()         
                     glPopMatrix()   
                 elif num>middle:
                     glPushMatrix()
+                    glRotate(a,0,0,1)
                     glScale(0.5,0.5,0.5)
-                    glRotate(90,0,0,1)
-                    glRotate(d[1]*180-d[0]*90,0,0,1)
                     glTranslate(2,0,0)
                     self.cheapModel[3].drawMe()         
                     glPopMatrix()   
