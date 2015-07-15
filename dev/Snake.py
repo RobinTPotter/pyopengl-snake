@@ -214,7 +214,7 @@ class Testing:
         self.ftx,self.fty,self.ftz=self.rfxx,self.rfyy,self.rfzz
         self.fox,self.foy,self.foz=self.rox,self.roy,self.roz
 
-    def animate(self,FPS=20):
+    def animate(self,FPS=25):
     
         if self.lock==True: return
     
