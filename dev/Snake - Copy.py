@@ -337,9 +337,9 @@ class Testing:
                 
             if self.TIME % 50==0:
                 print("tick")
-                self.ctx=random.random()*(2+self.SIZE[0])-1
-                self.cty=random.random()*(2+self.SIZE[1])-1
-                self.ctz=random.random()*6+1
+                self.ctx=random.random()*self.SIZE[0]
+                self.cty=random.random()*self.SIZE[1]
+                self.ctz=random.random()*5+2
                                
                 
                 
@@ -581,35 +581,35 @@ class Testing:
                     glRotate(a,0,0,1)
                     glScale(0.5,0.5,0.5)
                     glTranslate(-4,0,0)
-                    self.cheapModel[0].drawMe(actually=False)         
+                    self.cheapModel[0].drawMe()         
                     glPopMatrix()
                 elif num<middle:
                     glPushMatrix()
                     glRotate(a,0,0,1)
                     glScale(0.5,0.5,0.5)
                     glTranslate(-2,0,0)
-                    self.cheapModel[1].drawMe(actually=False)         
+                    self.cheapModel[1].drawMe()         
                     glPopMatrix()    
                 elif num==middle:
                     glPushMatrix()
                     glRotate(a,0,0,1)
                     glScale(0.5,0.5,0.5)
                     glTranslate(0,0,0)
-                    self.cheapModel[2].drawMe(actually=False)         
+                    self.cheapModel[2].drawMe()         
                     glPopMatrix()   
                 elif num==len(self.SNAKE)-1:
                     glPushMatrix()
                     glRotate(a,0,0,1)
                     glScale(0.5,0.5,0.5)
                     glTranslate(4,0,0)
-                    self.cheapModel[4].drawMe(actually=False)         
+                    self.cheapModel[4].drawMe()         
                     glPopMatrix()   
                 elif num>middle:
                     glPushMatrix()
                     glRotate(a,0,0,1)
                     glScale(0.5,0.5,0.5)
                     glTranslate(2,0,0)
-                    self.cheapModel[3].drawMe(actually=False)         
+                    self.cheapModel[3].drawMe()         
                     glPopMatrix()   
                     
 
@@ -664,18 +664,6 @@ class Testing:
                 d="white"
                 if self.TIME % 10<5: d="red"
                 self.drawString("game over - space to start.",col=d)
-                
-                d="green"
-                if self.TIME % 10<5: d="yellow"
-                glPushMatrix()
-                glTranslate(self.WIDTH/2-150,self.HEIGHT/2+50,0)
-                glScale(6,4,0)
-                self.drawString("GAME",col=d)
-                glTranslate(13,-15,0)
-                self.drawString("OF",col=d)
-                glTranslate(-27,-15,0)
-                self.drawString("SNAKES",col=d)
-                glPopMatrix()
 
             
             glColor(cc)

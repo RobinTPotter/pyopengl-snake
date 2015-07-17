@@ -8,7 +8,13 @@ from time import time
 from math import sin, cos, pi, floor, ceil, sqrt
 import random
 
+
 class Model:
+
+    
+
+
+
 
     def __init__(self,file=None):
     
@@ -18,6 +24,8 @@ class Model:
         
         if file!=None:
             self.loader(file)
+            
+        self.list=None
         
     def loader(self,filename):    
     
@@ -91,21 +99,48 @@ class Model:
 
 
 
-    def drawMe(self):
+    def drawMe(self,actually=True):
 
-        #print(("got to draw"))
-        glEnableClientState(GL_NORMAL_ARRAY)
-        glEnableClientState(GL_COLOR_ARRAY)
-        glEnableClientState(GL_VERTEX_ARRAY) 
-        glNormalPointer(GL_FLOAT, 0, self.normals)    
-        glColorPointer(3, GL_FLOAT, 0, self.colours)   
-        glVertexPointer(3, GL_FLOAT, 0, self.coordinates)   
-        glPushMatrix()    
-        glDrawArrays(GL_TRIANGLES,0,len(self.coordinates)/3 )
-        glPopMatrix()
-        glDisableClientState(GL_VERTEX_ARRAY)
-        glDisableClientState(GL_COLOR_ARRAY)
-        glDisableClientState(GL_NORMAL_ARRAY)
+        #print((1))
+        initializing=False
+
+        if (actually==False and self.list==None):
+
+            print((2))
+            self.list = glGenLists(1) 
+            initializing=True
+            print(("list",self.list))
+            glNewList(self.list,GL_COMPILE) 
+            print((3))
+
+
+        if actually==True or (actually==False and initializing==True):
+            
+            print((4))
+            #print(("got to draw"))
+            glEnableClientState(GL_NORMAL_ARRAY)
+            glEnableClientState(GL_COLOR_ARRAY)
+            glEnableClientState(GL_VERTEX_ARRAY) 
+            glNormalPointer(GL_FLOAT, 0, self.normals)    
+            glColorPointer(3, GL_FLOAT, 0, self.colours)   
+            glVertexPointer(3, GL_FLOAT, 0, self.coordinates)   
+            glPushMatrix()    
+            glDrawArrays(GL_TRIANGLES,0,len(self.coordinates)/3 )
+            glPopMatrix()
+            glDisableClientState(GL_VERTEX_ARRAY)
+            glDisableClientState(GL_COLOR_ARRAY)
+            glDisableClientState(GL_NORMAL_ARRAY)
+            print((5))
+
+            if (actually==False and initializing==True):
+                print((6))
+                glEndList()
+                print((7))
+            
+        elif (actually==False and not self.list==None):
+            #print((8))
+            glCallList(self.list)
+            
 
 
     
