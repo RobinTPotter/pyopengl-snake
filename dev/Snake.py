@@ -214,7 +214,7 @@ class Testing:
         self.ftx,self.fty,self.ftz=self.rfxx,self.rfyy,self.rfzz
         self.fox,self.foy,self.foz=self.rox,self.roy,self.roz
 
-    def animate(self,FPS=25):
+    def animate(self,FPS=20):
     
         if self.lock==True: return
     
@@ -277,13 +277,13 @@ class Testing:
                 if self.OK_press==0:
                     
                     if self.snake_cam==0:
-                        if self.joystick.isUp():
+                        if self.joystick.isUp() and not self.DIR==[0,-1]:
                             self.DIR=[0,1]
-                        elif self.joystick.isDown():
+                        elif self.joystick.isDown() and not self.DIR==[0,1]:
                             self.DIR=[0,-1]
-                        elif self.joystick.isLeft():
+                        elif self.joystick.isLeft() and not self.DIR==[1,0]:
                             self.DIR=[-1,0]
-                        elif self.joystick.isRight():
+                        elif self.joystick.isRight() and not self.DIR==[-1,0]:
                             self.DIR=[1,0]
                             
                     else:
@@ -443,7 +443,7 @@ class Testing:
         self.cheapModel.append(Model("models/piece3.dat"))
         self.cheapModel.append(Model("models/piece4.dat"))
         self.cheapModel.append(Model("models/piece5.dat"))
-        
+        self.chap=Model("models/chap.dat")
         
         
         
@@ -545,7 +545,11 @@ class Testing:
             if self.FOOD!=None:
                 glPushMatrix()
                 glTranslate(self.FOOD[0],self.FOOD[1],0)
-                glutSolidSphere(0.5,8,8)
+                #glutSolidSphere(0.5,8,8)
+                glScale(0.4,0.4,0.4)
+                glRotate(X,0,0,1)
+                glTranslate(0,0,5)
+                self.chap.drawMe(actually=False)
                 glPopMatrix()
                 self.Eaten=True
         
