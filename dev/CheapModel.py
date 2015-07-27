@@ -31,11 +31,12 @@ class Model:
     
         fp=open(filename,"rb")
         fp.seek(0,2)
-        flength=int(fp.tell())/48 #length in triangles 48=2 lots of coords for vertices and colours  *3 for how many components for coord  *8 and for nunber of bytes to store a double
+        flength=int(fp.tell()/48) #length in triangles 48=2 lots of coords for vertices and colours  *3 for how many components for coord  *8 and for nunber of bytes to store a double
         print (("file",flength))        
 
         z=array.array("d")
         fp.seek(0)
+        print(("flength",flength))
         z.fromfile(fp,flength*3)
         self.coordinates=z.tolist()
         print(("coordinates",len(self.coordinates)))
@@ -125,7 +126,7 @@ class Model:
             glColorPointer(3, GL_FLOAT, 0, self.colours)   
             glVertexPointer(3, GL_FLOAT, 0, self.coordinates)   
             glPushMatrix()    
-            glDrawArrays(GL_TRIANGLES,0,len(self.coordinates)/3 )
+            glDrawArrays(GL_TRIANGLES,0,int(len(self.coordinates)/3))
             glPopMatrix()
             glDisableClientState(GL_VERTEX_ARRAY)
             glDisableClientState(GL_COLOR_ARRAY)

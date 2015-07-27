@@ -10,6 +10,10 @@ import random
 from Models import lists, MakeLists, colours
 import array, struct
 
+
+import sys, traceback
+
+
 from CheapModel import Model
 
 X=46.0
@@ -687,6 +691,7 @@ class Testing:
 
 
         except Exception as a:
+            print (str(traceback.print_exc(file=sys.stdout)))
             print (("blah",a))
             
         finally:                
