@@ -24,6 +24,13 @@ name = b'testing'
 
 class Joystick:
     
+    """Joystick class for keeping tabs on what buttons are pressed.
+    Initialize with keys and it'll take care of whether somethings
+    pressed or not.
+    Defaults are QAOPM.
+    Can be handler for keyup and keydown from glut,
+    """
+    
     up,down,left,right,fire="","","","",""
     keys={}
 
@@ -76,6 +83,12 @@ class Joystick:
  
  
 class BarrierGrowth:    
+    """Class for barrier growth.
+    Init with an array to hold all of the them,
+    coordinates of start
+    time at which they start to grow,
+    direction, length and speed
+    """    
 
     def __init__(self,barrierset,x=5,y=5,t=50,dx=1,dy=0,len=10,speed=10):
     
@@ -87,7 +100,10 @@ class BarrierGrowth:
         self.speedmod=speed
         self.timeup=len*speed+t
         self.currentlen=0
-        
+
+    """actually start the barriers growing
+    takes care of finishing itself off    
+    """
     def go(self,nowtime,food,set_food_none_callback):
         
         if nowtime % self.speedmod==0:
@@ -102,11 +118,11 @@ class BarrierGrowth:
         return True
             
         
-   
- 
- 
- 
+
 class Testing:
+    
+    """Main class for the game
+    """
 
     SIZE=[50,50]
     #SNAKE=[[25,25],[25,24],[25,23],[25,22],[25,21]]
@@ -121,21 +137,24 @@ class Testing:
     POINTS=0
     Eaten=False
     
+    #number of ticks which elapse before the snake grows
+    #actually the snake doesn't grow it, it just  doesn't
+    #loose a brick from the end
     GROWTH_FREQUENCY=20    
     
-    cxx,cyy,czz=SIZE[0]/2,SIZE[1]/2,40
-    fxx,fyy,fzz=SIZE[0]/2,SIZE[1]/2,0
-    fox,foy,foz=0,1,0
+    eye_xx,eye_yy,eye_zz=SIZE[0]/2,SIZE[1]/2,40
+    focus_xx,focus_yy,focus_zz=SIZE[0]/2,SIZE[1]/2,0
+    up_x,up_y,up_z=0,1,0
     
     
     COUNT_DOWN=0
     
-    rcxx,rcyy,rczz=SIZE[0]/2,SIZE[1]/2,40
-    rfxx,rfyy,rfzz=SIZE[0]/2,SIZE[1]/2,0
-    rox,roy,roz=0,1,0
+    reset_eye_xx,reset_eye_yy,reset_eye_zz=SIZE[0]/2,SIZE[1]/2,40
+    reset_focus_xx,reset_focus_yy,reset_focus_zz=SIZE[0]/2,SIZE[1]/2,0
+    reset_up_x,reset_up_y,reset_up_z=0,1,0
     
-    ctx,cty,ctz=SIZE[0]/2,SIZE[1]/2,60
-    ftx,fty,ftz=SIZE[0]/2,SIZE[1]/2,0
+    current_eye_target_x,current_eye_target_y,current_eye_target_z=SIZE[0]/2,SIZE[1]/2,60
+    current_focus_target_x,current_focus_target_y,current_focus_target_z=SIZE[0]/2,SIZE[1]/2,0
     
     LEVEL=[]
     
@@ -189,7 +208,7 @@ class Testing:
         self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=self.SIZE[0]-15,y=self.SIZE[1]-15,t=180,dx=-1,dy=0,len=30,speed=5))
         self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=15,y=15,t=180,dx=1,dy=0,len=30,speed=5))
     
-        self.ctz=abs(self.ctz)
+        self.current_eye_target_z=abs(self.current_eye_target_z)
         self.FOOD=None
         self.POINTS=0
         self.SIZE=[50,50]
@@ -214,40 +233,51 @@ class Testing:
         return {"Location":xy,"Direction":dir}
 
     def reset_cam(self):
-        self.ctx,self.cty,self.ctz=self.rcxx,self.rcyy,self.rczz
-        self.ftx,self.fty,self.ftz=self.rfxx,self.rfyy,self.rfzz
-        self.fox,self.foy,self.foz=self.rox,self.roy,self.roz
+        self.current_eye_target_x,self.current_eye_target_y,self.current_eye_target_z=self.reset_eye_xx,self.reset_eye_yy,self.reset_eye_zz
+        self.current_focus_target_x,self.current_focus_target_y,self.current_focus_target_z=self.reset_focus_xx,self.reset_focus_yy,self.reset_focus_zz
+        self.up_x,self.up_y,self.up_z=self.reset_up_x,self.reset_up_y,self.reset_up_z
 
-    def animate(self,FPS=20):
+    def animate(self,FPS=15):
+        """the main method for calculating the state before
+        drawing.
+        
+        there are two states "gane over" 0 and "play" 1.
+        
+        it keeps tabs on the actual time taken and the tick count.
+        """
     
         if self.lock==True: return
     
-        currentTime=time()
-                
-        
+        currentTime=time()        
         self.TIME+=1
-        
-        
-        
+                
         if self.state==1:
+            """PLay Mode
+            """
         
-             
-            
             if self.COUNT_DOWN==0:
-                
-                            
+                """the game stars with a count down, to enable player to get ready
+                and also for the first set of barriers to draw
+                """
+                                   
+                """growth tick,
+                don't loose the brick 
+                """                            
                 if self.TIME % self.GROWTH_FREQUENCY != 0 or self.Eaten==False: self.SNAKE.pop() #gets rid of last blob (if required)
-                
-                
             
+                #always add a brick (segment of the body) in the direction of travel
+                #actually we're adding an object that remember s the position the direction
+                #seemed like a good idea at the time
                 self.SNAKE.insert(0,{"Location":[self.SNAKE[0]["Location"][0]+self.DIR[0],self.SNAKE[0]["Location"][1]+self.DIR[1]],"Direction":self.DIR})
                 
+                #eaten action has taken place now reset
                 if self.Eaten==True: self.Eaten=False
-                
-                xxxx=len(self.SNAKE)-1        
-                
-                    
+                 
                 if self.FOOD==None:
+                    """there is no food,
+                    put some food, food can't be where the snake  is or where
+                    a barrier is - this is taken care of by the barrier grower
+                    """
                 
                     testing=False            
                     fx,fy=0,0
@@ -257,8 +287,7 @@ class Testing:
                         testing=True
                     
                         fx=int(random.random()*self.SIZE[0])
-                        fy=int(random.random()*self.SIZE[1])
-                                            
+                        fy=int(random.random()*self.SIZE[1])                                            
                                     
                         for s in self.SNAKE:
                             if s==[fx,fy]:
@@ -266,20 +295,25 @@ class Testing:
                                 
                         for b in self.LEVEL:
                             if b==[fx,fy]:
-                                testing=False
-                                    
-                        
+                                testing=False                        
                         
                     self.FOOD=[fx,fy]
                     
-                
+                #food encountered
+                #increment and set food to None
                 if self.FOOD[0]==self.SNAKE[0]["Location"][0] and self.FOOD[1]==self.SNAKE[0]["Location"][1]:
                     self.POINTS+=1
                     if self.snake_cam>0: self.POINTS+=1
                     self.FOOD=None
                 
+                #Ok_press means button is ok to press,
+                #this is a guard against snake cam
+                #the ress action is too quick because a snake can
+                #eat itself on a double pres of the same key, which
+                #doesn't happen in normal mode
                 if self.OK_press==0:
                     
+                    #normal mode, but changed so snake can't got back on itself
                     if self.snake_cam==0:
                         if self.joystick.isUp() and not self.DIR==[0,-1]:
                             self.DIR=[0,1]
@@ -290,6 +324,7 @@ class Testing:
                         elif self.joystick.isRight() and not self.DIR==[-1,0]:
                             self.DIR=[1,0]
                             
+                    #snake cam!        
                     else:
                         if self.joystick.isLeft():
                             tmp=[-self.DIR[1],self.DIR[0]]
@@ -300,13 +335,15 @@ class Testing:
                             self.DIR=tmp
                             self.OK_press=2
                         
+                #assuming wasn't ok to press, decrease the ok to press counter
                 else:
                     self.OK_press-=1
                         
-                        
-                self.ftx=self.SNAKE[0]["Location"][0]
-                self.fty=self.SNAKE[0]["Location"][1]
-                self.ftz=self.ftz
+                #current focal target is the head of the snake
+                #always        
+                self.current_focus_target_x=self.SNAKE[0]["Location"][0]
+                self.current_focus_target_y=self.SNAKE[0]["Location"][1]
+                self.current_focus_target_z=self.current_focus_target_z
                 
                 
                 
@@ -340,24 +377,24 @@ class Testing:
             #print(self.TIME)
                 
             if self.TIME % 50==0:
-                print("tick")
-                self.ctx=random.random()*(2+self.SIZE[0])-1
-                self.cty=random.random()*(2+self.SIZE[1])-1
-                self.ctz=random.random()*6+1
+                #print("tick")
+                self.current_eye_target_x=random.random()*(2+self.SIZE[0])-1
+                self.current_eye_target_y=random.random()*(2+self.SIZE[1])-1
+                self.current_eye_target_z=random.random()*6+1
                                
                 
                 
                 
         if self.TIME % 300==0 and (self.TIME>1000 or self.state==0) and self.snake_cam==0:
-            self.ctz*=-1
+            self.current_eye_target_z*=-1
             
-        self.fxx=self.fxx+(self.ftx-self.fxx)/10.0
-        self.fyy=self.fyy+(self.fty-self.fyy)/10.0
-        self.fzz=self.fzz+(self.ftz-self.fzz)/10.0
+        self.focus_xx=self.focus_xx+(self.current_focus_target_x-self.focus_xx)/10.0
+        self.focus_yy=self.focus_yy+(self.current_focus_target_y-self.focus_yy)/10.0
+        self.focus_zz=self.focus_zz+(self.current_focus_target_z-self.focus_zz)/10.0
             
-        self.cxx=self.cxx+(self.ctx-self.cxx)/10.0
-        self.cyy=self.cyy+(self.cty-self.cyy)/10.0
-        self.czz=self.czz+(self.ctz-self.czz)/10.0
+        self.eye_xx=self.eye_xx+(self.current_eye_target_x-self.eye_xx)/10.0
+        self.eye_yy=self.eye_yy+(self.current_eye_target_y-self.eye_yy)/10.0
+        self.eye_zz=self.eye_zz+(self.current_eye_target_z-self.eye_zz)/10.0
         
         if self.TIME % 200 < self.snake_cam_max and self.snake_cam==0 and self.TIME>self.snake_cam_max:
             self.snake_cam=self.snake_cam_max
@@ -370,16 +407,16 @@ class Testing:
                 self.snake_cam_max=self.TIME+200 
                 
             else:
-                self.ctx,self.cty,self.ctz=self.SNAKE[0]["Location"][0]-2*self.DIR[0],self.SNAKE[0]["Location"][1]-2*self.DIR[1],2
-                self.ftx,self.fty,self.ftz=self.SNAKE[0]["Location"][0],self.SNAKE[0]["Location"][1],2
-                self.fox,self.foy,self.foz=0,0,1
+                self.current_eye_target_x,self.current_eye_target_y,self.current_eye_target_z=self.SNAKE[0]["Location"][0]-2*self.DIR[0],self.SNAKE[0]["Location"][1]-2*self.DIR[1],2
+                self.current_focus_target_x,self.current_focus_target_y,self.current_focus_target_z=self.SNAKE[0]["Location"][0],self.SNAKE[0]["Location"][1],2
+                self.up_x,self.up_y,self.up_z=0,0,1
             
             
         
 
         
-        #self.cxx=self.cxx+(self.SNAKE[0][0]-self.cxx)/30
-        #self.cyy=self.cyy+(self.SNAKE[0][1]-self.cyy)/30                 
+        #self.eye_xx=self.eye_xx+(self.SNAKE[0][0]-self.eye_xx)/30
+        #self.eye_yy=self.eye_yy+(self.SNAKE[0][1]-self.eye_yy)/30                 
     
         glutPostRedisplay()
         
@@ -390,7 +427,7 @@ class Testing:
             self.topFPS=int(1000/(drawTime))
             if int(100*time())%100==0:
                 print(("draw self.TIME "+str(drawTime)+" top FPS "+str(1000/drawTime)))
-                #self.tcxx,self.tcyy,self.tczz=random.randint(5,14),random.randint(5,14),random.randint(5,14)
+                #self.teye_xx,self.teye_yy,self.teye_zz=random.randint(5,14),random.randint(5,14),random.randint(5,14)
         else:
             drawTime=1
             
@@ -522,9 +559,9 @@ class Testing:
 
             glEnable(GL_LIGHTING)
             
-            gluLookAt(self.cxx,self.cyy,self.czz,
-                      self.fxx,self.fyy,self.fzz,
-                      self.fox,self.foy,self.foz)
+            gluLookAt(self.eye_xx,self.eye_yy,self.eye_zz,
+                      self.focus_xx,self.focus_yy,self.focus_zz,
+                      self.up_x,self.up_y,self.up_z)
                 
                 
             # // track material ambient and diffuse from surface color, call it before glEnable(GL_COLOR_MATERIAL)
