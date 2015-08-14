@@ -7,12 +7,13 @@ import sys
 from time import time
 from math import sin, cos, pi, floor, ceil, sqrt
 import random
-from Models import lists, MakeLists, colours
+from Models import lists, MakeLists, colours, lumin_no_black
 import array, struct
-
+import pickle
 
 import sys, traceback
 
+print(lumin_no_black)
 
 from CheapModel import Model
 
@@ -156,6 +157,8 @@ class Testing:
     
     barriergrowers=[]
     
+    message_timer=0
+    
     def start(self,yes=None):
     
     
@@ -173,7 +176,9 @@ class Testing:
         '''
 
     
-        if yes==None: self.COUNT_DOWN=5
+        if yes==None:
+            self.COUNT_DOWN=5
+            self.message("ready!!")
             
         self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=-1,y=self.SIZE[1],t=0,dx=0,dy=-1,len=self.SIZE[1]+1,speed=1))
         self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=self.SIZE[0]+1,y=0,t=10,dx=0,dy=1,len=self.SIZE[1]+1,speed=1))
@@ -276,6 +281,7 @@ class Testing:
                 if self.FOOD[0]==self.SNAKE[0]["Location"][0] and self.FOOD[1]==self.SNAKE[0]["Location"][1]:
                     self.POINTS+=1
                     if self.snake_cam>0: self.POINTS+=1
+                    self.message("nom!... nom...!!")
                     self.FOOD=None
                 
                 if self.OK_press==0:
@@ -341,32 +347,44 @@ class Testing:
                 
             if self.TIME % 50==0:
                 print("tick")
-                self.ctx=random.random()*(2+self.SIZE[0])-1
-                self.cty=random.random()*(2+self.SIZE[1])-1
-                self.ctz=random.random()*6+1
-                               
+                self.ctx=cos(self.TIME/10)*10
+                self.cty=sin(self.TIME/10)*10
+                self.ctz=cos(self.TIME/10)*2+1
+                print((self.ctx,self.cty,self.ctz))
                 
+                #self.ctx=random.random()*(2+self.SIZE[0])-1
+                #self.cty=random.random()*(2+self.SIZE[1])-1
+                #self.ctz=random.random()*6+1
+                               
+            
                 
                 
         if self.TIME % 300==0 and (self.TIME>1000 or self.state==0) and self.snake_cam==0:
             self.ctz*=-1
+            self.message("Reversed")
             
-        self.fxx=self.fxx+(self.ftx-self.fxx)/10.0
-        self.fyy=self.fyy+(self.fty-self.fyy)/10.0
-        self.fzz=self.fzz+(self.ftz-self.fzz)/10.0
             
-        self.cxx=self.cxx+(self.ctx-self.cxx)/10.0
-        self.cyy=self.cyy+(self.cty-self.cyy)/10.0
-        self.czz=self.czz+(self.ctz-self.czz)/10.0
+        change_factor=3.0
         
-        if self.TIME % 200 < self.snake_cam_max and self.snake_cam==0 and self.TIME>self.snake_cam_max:
+        self.fxx=self.fxx+(self.ftx-self.fxx)/change_factor
+        self.fyy=self.fyy+(self.fty-self.fyy)/change_factor
+        self.fzz=self.fzz+(self.ftz-self.fzz)/change_factor
+            
+        self.cxx=self.cxx+(self.ctx-self.cxx)/change_factor
+        self.cyy=self.cyy+(self.cty-self.cyy)/change_factor
+        self.czz=self.czz+(self.ctz-self.czz)/change_factor
+        
+        if (self.TIME % 200 < self.snake_cam_max and self.snake_cam==0 and self.TIME>self.snake_cam_max) and self.state==1:
             self.snake_cam=self.snake_cam_max
+            self.message("Snake Cam!!")
             
         if self.snake_cam>0:
             self.snake_cam-=1
             
             if self.snake_cam==0:
                 self.reset_cam()
+                self.message("Reset")
+            
                 self.snake_cam_max=self.TIME+200 
                 
             else:
@@ -397,98 +415,18 @@ class Testing:
 
         self.lastFrameTime=time()
 
+
+    def message(self,str):
+        self.message_timer=30
+        self.message_text=str
+    
+
+
     def set_food_none_callback(self):
         self.FOOD=None
 
     def Dead(self):
         self.state=0
-
-    def __init__(self):
-
-        
-        print((bool(glutInit)))
-        glutInit(sys.argv)
-        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH)
-        glutInitWindowSize(self.WIDTH,self.HEIGHT)
-        glutCreateWindow(name)
-        
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE)
-    
-        glClearColor(0.,0.,0.,1.)
-        glShadeModel(GL_SMOOTH)
-        glEnable(GL_CULL_FACE)
-        glCullFace(GL_BACK) 
-        glEnable(GL_DEPTH_TEST)
-        glDepthFunc(GL_LEQUAL)
-        
-        
-        
-        
-        glEnable(GL_LIGHTING)
-        lightZeroPosition = [0,0,5]
-        lightZeroColor = [1.0,1.0,1.0,1.0] #green tinged
-        glLightfv(GL_LIGHT0, GL_POSITION, lightZeroPosition)
-        glLightfv(GL_LIGHT0, GL_DIFFUSE, lightZeroColor)
-        glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1)
-        glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.02)
-        glEnable(GL_LIGHT0)
-        
-        
-        
-        
-        
-        
-        MakeLists()
-        
-        self.cheapModel=[]
-        
-        self.cheapModel.append(Model("models/piece1.dat"))
-        self.cheapModel.append(Model("models/piece2.dat"))
-        self.cheapModel.append(Model("models/piece3.dat"))
-        self.cheapModel.append(Model("models/piece4.dat"))
-        self.cheapModel.append(Model("models/piece5.dat"))
-        self.chap=Model("models/chap.dat")
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        glutIgnoreKeyRepeat(1)
-
-        glutReshapeFunc(self.reshape)
-        
-        glutSpecialFunc(self.joystick.keydownevent)
-        glutSpecialUpFunc(self.joystick.keyupevent)
-
-        glutKeyboardFunc(self.joystick.keydownevent)
-        glutKeyboardUpFunc(self.joystick.keyupevent)
-        glutDisplayFunc(self.display)
-        #glutIdleFunc(self.display)
-        
-        glMatrixMode(GL_PROJECTION)
-        gluPerspective(60.0,640.0/480.,0.001,100.0)
-        glMatrixMode(GL_MODELVIEW)
-        glPushMatrix()
-        
-        
-        ##self.initkey("zxdcfvqaopm")
-        
-        self.animate()
-        self.start(yes="No")
-        
-        glutMainLoop()
-
-        return
 
     def reshape(self,width,height):
         print("hello reshape "+str((width,height)))
@@ -657,6 +595,15 @@ class Testing:
             glTranslate(2,2,0)
             self.drawString("SCORE: "+str(self.POINTS)) ##+" sanke cam: "+str(self.snake_cam)+" TIME: "+str(self.TIME))
             
+            if self.message_timer>0:
+                self.message_timer-=1
+                glPushMatrix()                    
+                glTranslate(random.random()*3,18+random.random()*3,0)
+                d="white"
+                if self.TIME % 4<2: d="red"                    
+                self.drawString(self.message_text,col=d)
+                glPopMatrix()
+            
             
             if self.COUNT_DOWN>0:
                 d="yellow"
@@ -667,24 +614,105 @@ class Testing:
                 self.drawString(str(self.COUNT_DOWN),col=d)
                 glPopMatrix()
             
-            if self.state==0:                
-                glTranslate(0,18,0)
-                d="white"
-                if self.TIME % 10<5: d="red"
-                self.drawString("game over - space to start.",col=d)
-                
-                d="green"
-                if self.TIME % 10<5: d="yellow"
-                glPushMatrix()
-                glTranslate(self.WIDTH/2-150,self.HEIGHT/2+50,0)
-                glScale(6,4,0)
-                self.drawString("GAME",col=d)
-                glTranslate(13,-15,0)
-                self.drawString("OF",col=d)
-                glTranslate(-27,-15,0)
-                self.drawString("SNAKES",col=d)
-                glPopMatrix()
+            if self.state==0:   
 
+                if self.TIME % 300>150:
+                 
+                    glPushMatrix()
+                    
+                    glTranslate(0,18,0)
+                    d="white"
+                    if self.TIME % 10<5: d="red"
+                    self.drawString("game over - space to start.",col=d)
+                    
+                    #d="green"
+                    #if self.TIME % 10<5:
+                    #    #d="yellow"
+                    d=lumin_no_black[self.TIME%len(lumin_no_black)]
+                    glPushMatrix()
+                    glTranslate(self.WIDTH/2-150,self.HEIGHT/2+50,0)
+                    glScale(6,4,0)
+                    self.drawString("GAME",col=d)
+                    glTranslate(13,-15,0)
+                    self.drawString("OF",col=d)
+                    glTranslate(-27,-15,0)
+                    self.drawString("SNAKES",col=d)
+                    glPopMatrix()
+
+                    glPopMatrix()
+
+            
+
+                else:
+                 
+                    glPushMatrix()
+                    
+                    d="green"
+                    if self.TIME % 10<5: d="yellow"
+                    
+                    
+                    
+                    glPushMatrix()                    
+                    
+                    glTranslate(self.WIDTH/2,self.HEIGHT/2,0)
+
+                    glScale(3,2,0)
+                    glTranslate(-135,10*(float(len(self.teams))+4)/2,0)
+                    
+                    
+                    self.drawString("~~~GAME OF SNAKES~~~",col=d)
+                    #glTranslate(-10,-20,0)
+                    glTranslate(0,-14,0)
+                    glTranslate(0,-14,0)
+                    glTranslate(0,-14,0)
+                    
+                    if self.teams!=None:
+                        for t in self.teams.keys():
+                            #print(("team:",t))
+                            glTranslate(0,-14,0)
+                            self.drawString(   t.ljust(8)                                                    ,col=d)
+                    
+                    glPopMatrix()
+                    
+                    
+                    
+                    
+                    
+                    
+                    glPushMatrix()                    
+                    
+                    glTranslate(self.WIDTH/2,self.HEIGHT/2,0)
+
+                    glScale(1,2,0)
+                    glTranslate(-135,10*(float(len(self.teams))+4)/2,0)
+                    
+                    
+                    #glTranslate(-10,-20,0)
+                    glTranslate(0,-14,0)
+                    glTranslate(0,-14,0)
+                    self.drawString(   " ".ljust(8)   +   str("Gms").rjust(5)      +   str("Tot").rjust(5)      +   str("Avg").rjust(5)     +   str("Tm.").rjust(5)        +   str("Bl.").rjust(5)        +   str("Bl.").rjust(5)        ,col=d)
+                    
+                    glTranslate(0,-14,0)
+                    
+                    
+                    if self.teams!=None:
+                        for t in self.teams.keys():
+                            #print(("team:",t))
+                            glTranslate(0,-14,0)
+                            self.drawString(   " ".ljust(8)   +   str(len(self.teams[t]["games"])).rjust(5)      +   str(2).rjust(5)      +   str(3).rjust(5)     +   str(4).rjust(5)       +   str(4).rjust(5)       +   str(4).rjust(5)        ,col=d)
+                    
+                    glPopMatrix()
+                    
+                    
+                    
+                    
+                    
+                    
+
+                    glPopMatrix()
+
+            
+            
             
             glColor(cc)
 
@@ -756,5 +784,131 @@ class Testing:
         glPopMatrix()
 
 
+    def __init__(self,teamFile):
+
+        print(teamFile)
+        self.teams={}
+    
+        if teamFile!=None:
+            
+            try:
+            
+                line=0
+                for t in open(teamFile,"rb").read().split("\n"):
+                    line+=1
+                    if line==1 and t!="TEAMNAMES":
+                        raise Exception("bah not a list")
+                    else:
+                        if len(t)>0 and line>1:
+                            print(t)
+                            self.teams[t]={"games":[]}
+                        
+           
+            except Exception as e:
+                print("dor?")
+                print (e)
+                self.teams=pickle.loads(open(teamFile,"rb").read())
+                
+            print(self.teams)
+            
+        else:
+            self.teams["robin"]={"games":[]}
+            self.teams["chris"]={"games":[]}
+            self.teams["lisa"]={"games":[]}
+            self.teams["burtosa"]={"games":[]}
+            self.teams["sam"]={"games":[]}
+            self.teams["alex"]={"games":[]}
+            
+            
+            
+            
+        if teamFile!=None: open(teamFile,"wb").write(pickle.dumps(self.teams))
+            
         
-if __name__ == '__main__': Testing()
+
+
+        print((bool(glutInit)))
+        glutInit(sys.argv)
+        glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH)
+        glutInitWindowSize(self.WIDTH,self.HEIGHT)
+        glutCreateWindow(name)
+        
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE)
+    
+        glClearColor(0.,0.,0.,1.)
+        glShadeModel(GL_SMOOTH)
+        glEnable(GL_CULL_FACE)
+        glCullFace(GL_BACK) 
+        glEnable(GL_DEPTH_TEST)
+        glDepthFunc(GL_LEQUAL)
+        
+        
+        
+        
+        glEnable(GL_LIGHTING)
+        lightZeroPosition = [0,0,5]
+        lightZeroColor = [1.0,1.0,1.0,1.0] #green tinged
+        glLightfv(GL_LIGHT0, GL_POSITION, lightZeroPosition)
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, lightZeroColor)
+        glLightf(GL_LIGHT0, GL_CONSTANT_ATTENUATION, 0.1)
+        glLightf(GL_LIGHT0, GL_LINEAR_ATTENUATION, 0.02)
+        glEnable(GL_LIGHT0)
+        
+        
+        
+        MakeLists()
+        
+        self.cheapModel=[]
+        
+        self.cheapModel.append(Model("models/piece1.dat"))
+        self.cheapModel.append(Model("models/piece2.dat"))
+        self.cheapModel.append(Model("models/piece3.dat"))
+        self.cheapModel.append(Model("models/piece4.dat"))
+        self.cheapModel.append(Model("models/piece5.dat"))
+        self.chap=Model("models/chap.dat")
+        
+        
+        
+        
+        
+        glutIgnoreKeyRepeat(1)
+
+        glutReshapeFunc(self.reshape)
+        
+        glutSpecialFunc(self.joystick.keydownevent)
+        glutSpecialUpFunc(self.joystick.keyupevent)
+
+        glutKeyboardFunc(self.joystick.keydownevent)
+        glutKeyboardUpFunc(self.joystick.keyupevent)
+        glutDisplayFunc(self.display)
+        #glutIdleFunc(self.display)
+        
+        glMatrixMode(GL_PROJECTION)
+        gluPerspective(60.0,640.0/480.,0.001,100.0)
+        glMatrixMode(GL_MODELVIEW)
+        glPushMatrix()
+        
+        
+        ##self.initkey("zxdcfvqaopm")
+        
+        self.animate()
+        self.start(yes="No")
+        
+        glutMainLoop()
+
+        return
+
+
+        
+if __name__ == '__main__': 
+
+    teamFile=None
+
+    if len(sys.argv)==2: 
+        teamFile=sys.argv[1]
+        print(teamFile)
+
+    else:
+        print("no teams")
+            
+    Testing(teamFile)

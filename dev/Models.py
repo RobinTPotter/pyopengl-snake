@@ -26,6 +26,28 @@ colours["wand"]=[0,0,0,1.0]
 colours["wandtip"]=[1,1,1,1.0]
 colours["black"]=[0,0,0,1.0]
 
+for rr in range(0,5):
+    for gg in range(0,5):
+        for bb in range(0,5):
+            colours[str(rr)+"_"+str(gg)+"_"+str(bb)]=[float(rr)/5,float(gg)/5,float(bb)/5]
+
+lumin=[]
+
+z=zip(colours.keys(),colours.values())
+
+lum0=[(zz[1][0]*256)**2+(zz[1][1]*256)**2+(zz[1][2]*256)**2 for zz in z]
+
+lumin=zip(colours.keys(),colours.values(),lum0)
+
+lumin0=sorted(lumin,key=lambda(a): a[2])
+lumin=[c[0] for c in sorted(lumin0,key=lambda(a): a[2])]
+lumin_no_black=[c[0] for c in sorted(lumin0,key=lambda(a): a[2]) if c[2]>100]
+
+
+del(lum0)
+del(lumin0)
+
+
 
 lists={}
 
@@ -96,6 +118,17 @@ def MakeLists():
     glBegin(GL_LINE_STRIP)
     glVertex2f(5.0, 0.0)
     glVertex2f(5.5, 0.0) 
+    glEnd()
+    glEndList()
+    
+    
+    lists["!"] = glGenLists(1) 
+    glNewList(lists["!"],GL_COMPILE)
+    glBegin(GL_LINES)
+    glVertex2f(5.0, 0.0)
+    glVertex2f(5.5, 0.0) 
+    glVertex2f(5.0, 2)
+    glVertex2f(6, 10.0) 
     glEnd()
     glEndList()
 
