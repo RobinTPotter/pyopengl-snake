@@ -134,6 +134,8 @@ class Testing:
     
     FOOD=None
     POINTS=0
+    SURVIVAL=0
+    
     Eaten=False
     
     #number of ticks which elapse before the snake grows
@@ -199,6 +201,7 @@ class Testing:
         self.current_eye_target_z=abs(self.current_eye_target_z)
         self.FOOD=None
         self.POINTS=0
+        self.SURVIVAL=0
         self.SIZE=[50,50]
         self.SNAKE=[]
         for sss in range(0,5):
@@ -244,6 +247,9 @@ class Testing:
             """
         
             if self.COUNT_DOWN==0:
+            
+                if self.TIME%FPS==0: self.SURVIVAL+=1
+            
                 """the game stars with a count down, to enable player to get ready
                 and also for the first set of barriers to draw
                 """
@@ -447,6 +453,12 @@ class Testing:
         self.FOOD=None
 
     def Dead(self):
+        #PT points
+        #SV survival time
+        #DSC died during snake cam
+        
+        self.teams[self.teams.keys()[0]]["games"].append({"PT": self.POINTS, "SV": self.SURVIVAL, "DSC": self.snake_cam>0})
+    
         self.state=0
 
     def reshape(self,width,height):
