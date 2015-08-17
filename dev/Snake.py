@@ -21,8 +21,6 @@ X=46.0
 
 name = b'testing'
 
-
-
 class Joystick:
     
     """Joystick class for keeping tabs on what buttons are pressed.
@@ -178,22 +176,9 @@ class Testing:
     
     message_timer=0
     
-    def start(self,yes=None):
-    
+    def start(self,yes=None):    
     
         if yes==None: self.LEVEL=[]
-    
-        '''
-        for xx in range(-1,self.SIZE[0]+2):
-            self.LEVEL.append([xx,-1])
-            self.LEVEL.append([xx,self.SIZE[1]+1])
-            
-            
-        for yy in range(-1,self.SIZE[1]+2):
-            self.LEVEL.append([-1,yy])
-            self.LEVEL.append([self.SIZE[0]+1,yy])
-        '''
-
     
         if yes==None:
             self.COUNT_DOWN=5
@@ -204,8 +189,6 @@ class Testing:
         
         self.barriergrowers.append(BarrierGrowth(self.LEVEL,y=-1,x=self.SIZE[0],t=0,dx=-1,dy=0,len=self.SIZE[0]+1,speed=1))
         self.barriergrowers.append(BarrierGrowth(self.LEVEL,y=self.SIZE[1]+1,x=0,t=10,dx=1,dy=0,len=self.SIZE[0]+1,speed=1))
-    
-            
             
         self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=self.SIZE[0]-5,y=self.SIZE[1]-5,t=80,dx=-1,dy=0,len=20,speed=10))
         self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=5,y=5,t=80,dx=1,dy=0,len=20,speed=10))
@@ -372,8 +355,7 @@ class Testing:
                 if bg.timestart<self.TIME:
                     res=bg.go(self.TIME,self.FOOD,self.set_food_none_callback)
                     if res==False:
-                        self.barriergrowers.remove(bg)
-                        
+                        self.barriergrowers.remove(bg)                        
                         
         else:
         
@@ -383,52 +365,28 @@ class Testing:
             #print(self.TIME)
                 
             if self.TIME % 50==0:
-<<<<<<< HEAD
                 print("tick")
-                self.ctx=cos(self.TIME/10)*10
-                self.cty=sin(self.TIME/10)*10
-                self.ctz=cos(self.TIME/10)*2+1
-                print((self.ctx,self.cty,self.ctz))
-                
-                #self.ctx=random.random()*(2+self.SIZE[0])-1
-                #self.cty=random.random()*(2+self.SIZE[1])-1
-                #self.ctz=random.random()*6+1
-=======
-                #print("tick")
-                self.current_eye_target_x=random.random()*(2+self.SIZE[0])-1
-                self.current_eye_target_y=random.random()*(2+self.SIZE[1])-1
-                self.current_eye_target_z=random.random()*6+1
->>>>>>> c93eb382e670ad87029be8af06432052c5c80862
-                               
-            
-                
+                self.current_eye_target_x=cos(self.TIME/10)*10
+                self.current_eye_target_y=sin(self.TIME/10)*10
+                self.current_eye_target_z=cos(self.TIME/10)*2+1
+                #self.current_eye_target_x=random.random()*(2+self.SIZE[0])-1
+                #self.current_eye_target_y=random.random()*(2+self.SIZE[1])-1
+                #self.current_eye_target_z=random.random()*6+1
+                          
                 
         if self.TIME % 300==0 and (self.TIME>1000 or self.state==0) and self.snake_cam==0:
-<<<<<<< HEAD
-            self.ctz*=-1
-            self.message("Reversed")
-            
-            
-        change_factor=3.0
-=======
             self.current_eye_target_z*=-1
+            self.message("Reversed")
+                        
+        change_factor=3.0
+                    
+        self.focus_xx=self.focus_xx+(self.current_focus_target_x-self.focus_xx)/change_factor
+        self.focus_yy=self.focus_yy+(self.current_focus_target_y-self.focus_yy)/change_factor
+        self.focus_zz=self.focus_zz+(self.current_focus_target_z-self.focus_zz)/change_factor
             
-        self.focus_xx=self.focus_xx+(self.current_focus_target_x-self.focus_xx)/10.0
-        self.focus_yy=self.focus_yy+(self.current_focus_target_y-self.focus_yy)/10.0
-        self.focus_zz=self.focus_zz+(self.current_focus_target_z-self.focus_zz)/10.0
-            
-        self.eye_xx=self.eye_xx+(self.current_eye_target_x-self.eye_xx)/10.0
-        self.eye_yy=self.eye_yy+(self.current_eye_target_y-self.eye_yy)/10.0
-        self.eye_zz=self.eye_zz+(self.current_eye_target_z-self.eye_zz)/10.0
->>>>>>> c93eb382e670ad87029be8af06432052c5c80862
-        
-        self.fxx=self.fxx+(self.ftx-self.fxx)/change_factor
-        self.fyy=self.fyy+(self.fty-self.fyy)/change_factor
-        self.fzz=self.fzz+(self.ftz-self.fzz)/change_factor
-            
-        self.cxx=self.cxx+(self.ctx-self.cxx)/change_factor
-        self.cyy=self.cyy+(self.cty-self.cyy)/change_factor
-        self.czz=self.czz+(self.ctz-self.czz)/change_factor
+        self.eye_xx=self.eye_xx+(self.current_eye_target_x-self.eye_xx)/change_factor
+        self.eye_yy=self.eye_yy+(self.current_eye_target_y-self.eye_yy)/change_factor
+        self.eye_zz=self.eye_zz+(self.current_eye_target_z-self.eye_zz)/change_factor
         
         if (self.TIME % 200 < self.snake_cam_max and self.snake_cam==0 and self.TIME>self.snake_cam_max) and self.state==1:
             self.snake_cam=self.snake_cam_max
@@ -470,6 +428,13 @@ class Testing:
             
 
         self.lastFrameTime=time()
+        
+        if self.TIME % 200==0 and teamFile!=None: 
+            self.message("                          saving!")
+            print(("saving",teamFile))
+            open(teamFile,"wb").write(pickle.dumps(self.teams))
+            
+        
 
 
     def message(self,str):
@@ -778,6 +743,7 @@ class Testing:
             print (str(traceback.print_exc(file=sys.stdout)))
             print (("blah",a))
             
+            
         finally:                
             self.lock=False
 
@@ -923,10 +889,6 @@ class Testing:
         self.cheapModel.append(Model("models/piece5.dat"))
         self.chap=Model("models/chap.dat")
         
-        
-        
-        
-        
         glutIgnoreKeyRepeat(1)
 
         glutReshapeFunc(self.reshape)
@@ -942,8 +904,7 @@ class Testing:
         glMatrixMode(GL_PROJECTION)
         gluPerspective(60.0,640.0/480.,0.001,100.0)
         glMatrixMode(GL_MODELVIEW)
-        glPushMatrix()
-        
+        glPushMatrix()        
         
         ##self.initkey("zxdcfvqaopm")
         
@@ -953,8 +914,6 @@ class Testing:
         glutMainLoop()
 
         return
-
-
         
 if __name__ == '__main__': 
 
