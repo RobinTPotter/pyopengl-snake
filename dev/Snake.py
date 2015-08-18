@@ -148,6 +148,8 @@ class Testing:
     up_x,up_y,up_z=0,1,0
     
     
+    CURRENT_TEAM=""
+    
     COUNT_DOWN=0
     
     reset_eye_xx,reset_eye_yy,reset_eye_zz=SIZE[0]/2,SIZE[1]/2,40
@@ -219,6 +221,8 @@ class Testing:
         
         global X
         X=0
+        
+        self.save()
 
     def shct(self,xy,dir):
         return {"Location":xy,"Direction":dir}
@@ -374,7 +378,7 @@ class Testing:
                 print("tick")
                 self.current_eye_target_x=cos(self.TIME/10)*10
                 self.current_eye_target_y=sin(self.TIME/10)*10
-                self.current_eye_target_z=cos(self.TIME/10)*2+1
+                self.current_eye_target_z=10
                 #self.current_eye_target_x=random.random()*(2+self.SIZE[0])-1
                 #self.current_eye_target_y=random.random()*(2+self.SIZE[1])-1
                 #self.current_eye_target_z=random.random()*6+1
@@ -436,9 +440,7 @@ class Testing:
         self.lastFrameTime=time()
         
         if self.TIME % 200==0 and teamFile!=None: 
-            self.message("                          saving!")
-            print(("saving",teamFile))
-            open(teamFile,"wb").write(pickle.dumps(self.teams))
+            self.save()
             
         
 
@@ -447,6 +449,10 @@ class Testing:
         self.message_timer=30
         self.message_text=str
     
+    def save(self):    
+        self.message("                          saving!")
+        print(("saving",teamFile))
+        open(teamFile,"wb").write(pickle.dumps(self.teams))
 
 
     def set_food_none_callback(self):
@@ -457,7 +463,12 @@ class Testing:
         #SV survival time
         #DSC died during snake cam
         
-        self.teams[self.teams.keys()[0]]["games"].append({"PT": self.POINTS, "SV": self.SURVIVAL, "DSC": self.snake_cam>0})
+        self.teams[self.CURRENT_TEAM]["games"].append({"PT": self.POINTS, "SV": self.SURVIVAL, "DSC": self.snake_cam>0})
+        print (("hello",sum([g["PT"] for g in self.teams[self.CURRENT_TEAM]["games"]]),[g["PT"] for g in self.teams[self.CURRENT_TEAM]["games"]]))
+        self.teams[self.CURRENT_TEAM]["PT"]=sum([g["PT"] for g in self.teams[self.CURRENT_TEAM]["games"]])
+    
+    
+        self.save()
     
         self.state=0
 
@@ -649,7 +660,14 @@ class Testing:
             
             if self.state==0:   
 
-                if self.TIME % 300>150:
+                if self.TIME % 300<150:
+                    self.SELECTMODE=True
+                else:
+                    if self.message_timer==0:
+                        self.SELECTMODE=False
+
+                if self.SELECTMODE==False:
+                 
                  
                     glPushMatrix()
                     
@@ -678,10 +696,31 @@ class Testing:
 
                 else:
                  
+                 
+                 
+                    
+                    if self.joystick.isUp() and self.OK_press==0:
+                        self.OK_press=5
+                        index=self.teams.keys().index(self.CURRENT_TEAM)
+                        index-=1                        
+                        if index<0: index=len(self.teams)-1
+                        self.CURRENT_TEAM=self.teams.keys()[index]
+                        self.message(self.CURRENT_TEAM+" ready!")
+                 
+                    if self.joystick.isDown() and self.OK_press==0:
+                        self.OK_press=5
+                        index=self.teams.keys().index(self.CURRENT_TEAM)
+                        index+=1                        
+                        if index>=len(self.teams): index=0
+                        self.CURRENT_TEAM=self.teams.keys()[index]
+                        self.message(self.CURRENT_TEAM+" ready!")
+                        
+                    if self.OK_press>0: self.OK_press-=1
+                        
                     glPushMatrix()
                     
                     d="green"
-                    if self.TIME % 10<5: d="yellow"
+                    if self.TIME % 2<1: d="yellow"
                     
                     
                     offset = -200
@@ -703,7 +742,10 @@ class Testing:
                         for t in self.teams.keys():
                             #print(("team:",t))
                             glTranslate(0,-14,0)
-                            self.drawString(   t.ljust(28)        ,col=d)
+                            dc=d
+                            if t==self.CURRENT_TEAM: dc="white"
+                            self.drawString(   t.ljust(28)        ,col=dc)
+                            
                     
                     glPopMatrix()
                     
@@ -855,7 +897,7 @@ class Testing:
             self.teams["alex"]={"games":[]}
             
             
-            
+        self.CURRENT_TEAM=self.teams.keys()[0]
             
         if teamFile!=None: open(teamFile,"wb").write(pickle.dumps(self.teams))
             

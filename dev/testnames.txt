@@ -5,19 +5,53 @@ p1
 S'games'
 p3
 (lp4
-ssS'darth merenghi'
-p5
-(dp6
-g3
-(lp7
-ssS'darth sidious'
+(dp5
+S'SV'
+p6
+I2
+sS'PT'
+p7
+I0
+sS'DSC'
 p8
-(dp9
-g3
-(lp10
-ssS'darth vader'
+I00
+sa(dp9
+S'SV'
+p10
+I2
+sS'PT'
 p11
-(dp12
+I0
+sS'DSC'
+p12
+I00
+sasg7
+I0
+ssS'darth sidious'
+p13
+(dp14
 g3
-(lp13
+(lp15
+(dp16
+S'SV'
+p17
+I2
+sS'PT'
+p18
+I0
+sS'DSC'
+p19
+I00
+sasg18
+I0
+ssS'darth merenghi'
+p20
+(dp21
+g3
+(lp22
+ssS'darth vader'
+p23
+(dp24
+g3
+(lp25
 ss.
