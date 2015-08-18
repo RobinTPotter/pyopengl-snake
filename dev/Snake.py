@@ -684,16 +684,16 @@ class Testing:
                     if self.TIME % 10<5: d="yellow"
                     
                     
-                    
+                    offset = -200
                     glPushMatrix()                    
                     
                     glTranslate(self.WIDTH/2,self.HEIGHT/2,0)
 
                     glScale(3,2,0)
-                    glTranslate(-135,10*(float(len(self.teams))+4)/2,0)
+                    glTranslate(offset,10*(float(len(self.teams))+4)/2,0)
                     
                     
-                    self.drawString("~~~GAME OF SNAKES~~~",col=d)
+                    self.drawString("      GAME OF SNAKES      ",col=d)
                     #glTranslate(-10,-20,0)
                     glTranslate(0,-14,0)
                     glTranslate(0,-14,0)
@@ -703,7 +703,7 @@ class Testing:
                         for t in self.teams.keys():
                             #print(("team:",t))
                             glTranslate(0,-14,0)
-                            self.drawString(   t.ljust(8)                                                    ,col=d)
+                            self.drawString(   t.ljust(28)        ,col=d)
                     
                     glPopMatrix()
                     
@@ -717,13 +717,13 @@ class Testing:
                     glTranslate(self.WIDTH/2,self.HEIGHT/2,0)
 
                     glScale(1,2,0)
-                    glTranslate(-135,10*(float(len(self.teams))+4)/2,0)
+                    glTranslate(offset,10*(float(len(self.teams))+4)/2,0)
                     
                     
                     #glTranslate(-10,-20,0)
                     glTranslate(0,-14,0)
                     glTranslate(0,-14,0)
-                    self.drawString(   " ".ljust(8)   +   str("Gms").rjust(5)      +   str("Tot").rjust(5)      +   str("Avg").rjust(5)     +   str("Tm.").rjust(5)        +   str("Bl.").rjust(5)        +   str("Bl.").rjust(5)        ,col=d)
+                    self.drawString(   " ".ljust(28)   +   str("Gms").rjust(5)      +   str("Tot").rjust(5)      +   str("Avg").rjust(5)     +   str("Tm.").rjust(5)        +   str("Bl.").rjust(5)        +   str("Bl.").rjust(5)        ,col=d)
                     
                     glTranslate(0,-14,0)
                     
@@ -732,7 +732,7 @@ class Testing:
                         for t in self.teams.keys():
                             #print(("team:",t))
                             glTranslate(0,-14,0)
-                            self.drawString(   " ".ljust(8)   +   str(len(self.teams[t]["games"])).rjust(5)      +   str(2).rjust(5)      +   str(3).rjust(5)     +   str(4).rjust(5)       +   str(4).rjust(5)       +   str(4).rjust(5)        ,col=d)
+                            self.drawString(   " ".ljust(28)   +   str(len(self.teams[t]["games"])).rjust(5)      +   str(2).rjust(5)      +   str(3).rjust(5)     +   str(4).rjust(5)       +   str(4).rjust(5)       +   str(4).rjust(5)        ,col=d)
                     
                     glPopMatrix()
                     
@@ -828,8 +828,9 @@ class Testing:
             try:
             
                 line=0
-                for t in open(teamFile,"rb").read().split("\n"):
+                for t in open(teamFile,"rb").read().splitlines():
                     line+=1
+                    print((t,line))
                     if line==1 and t!="TEAMNAMES":
                         raise Exception("bah not a list")
                     else:
@@ -928,6 +929,13 @@ class Testing:
         return
         
 if __name__ == '__main__': 
+
+    """arg is a file name, which is a pickle of game stats already played,
+    or a plain text file with the first line containing
+    TEAMNAMES
+    then a list of team names on each line - keep it short
+    
+    """
 
     teamFile=None
 
