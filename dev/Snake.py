@@ -686,8 +686,8 @@ class Testing:
                     self.drawString("GAME",col=d)
                     glTranslate(13,-15,0)
                     self.drawString("OF",col=d)
-                    glTranslate(-27,-15,0)
-                    self.drawString("SNAKES",col=d)
+                    glTranslate(-42,-15,0)
+                    self.drawString("DRAGONES",col=d)
                     glPopMatrix()
 
                     glPopMatrix()
@@ -723,7 +723,7 @@ class Testing:
                     if self.TIME % 2<1: d="yellow"
                     
                     
-                    offset = -200
+                    offset = -180
                     glPushMatrix()                    
                     
                     glTranslate(self.WIDTH/2,self.HEIGHT/2,0)
@@ -732,7 +732,7 @@ class Testing:
                     glTranslate(offset,10*(float(len(self.teams))+4)/2,0)
                     
                     
-                    self.drawString("      GAME OF SNAKES      ",col=d)
+                    self.drawString("     GAME OF DRAGONES     ",col=d)
                     #glTranslate(-10,-20,0)
                     glTranslate(0,-14,0)
                     glTranslate(0,-14,0)
@@ -744,7 +744,7 @@ class Testing:
                             glTranslate(0,-14,0)
                             dc=d
                             if t==self.CURRENT_TEAM: dc="white"
-                            self.drawString(   t.ljust(28)        ,col=dc)
+                            self.drawString(   t.ljust(20)        ,col=dc)
                             
                     
                     glPopMatrix()
@@ -765,7 +765,7 @@ class Testing:
                     #glTranslate(-10,-20,0)
                     glTranslate(0,-14,0)
                     glTranslate(0,-14,0)
-                    self.drawString(   " ".ljust(28)   +   str("Gms").rjust(5)      +   str("Tot").rjust(5)      +   str("Avg").rjust(5)     +   str("Tm.").rjust(5)        +   str("Bl.").rjust(5)        +   str("Bl.").rjust(5)        ,col=d)
+                    self.drawString(   " ".ljust(20)   +   str("Gms").rjust(5)      +   str("Tot").rjust(5)      +   str("Avg").rjust(5)     +   str("Tm.").rjust(5)        +   str("Bl.").rjust(5)        +   str("Bl.").rjust(5)        ,col=d)
                     
                     glTranslate(0,-14,0)
                     
@@ -774,7 +774,7 @@ class Testing:
                         for t in self.teams.keys():
                             #print(("team:",t))
                             glTranslate(0,-14,0)
-                            self.drawString(   " ".ljust(28)   +   str(len(self.teams[t]["games"])).rjust(5)      +   str(2).rjust(5)      +   str(3).rjust(5)     +   str(4).rjust(5)       +   str(4).rjust(5)       +   str(4).rjust(5)        ,col=d)
+                            self.drawString(   " ".ljust(20)   +   str(len(self.teams[t]["games"])).rjust(5)      +   str(2).rjust(5)      +   str(3).rjust(5)     +   str(4).rjust(5)       +   str(4).rjust(5)       +   str(4).rjust(5)        ,col=d)
                     
                     glPopMatrix()
                     
