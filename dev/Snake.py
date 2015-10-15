@@ -373,7 +373,8 @@ class Testing:
                 self.start()
 
             #print(self.TIME)
-                
+            
+            '''
             if self.TIME % 50==0:
                 print("tick")
                 self.current_eye_target_x=cos(self.TIME/10)*10
@@ -382,8 +383,14 @@ class Testing:
                 #self.current_eye_target_x=random.random()*(2+self.SIZE[0])-1
                 #self.current_eye_target_y=random.random()*(2+self.SIZE[1])-1
                 #self.current_eye_target_z=random.random()*6+1
-                          
-                
+            '''
+              
+            if self.TIME % 50==0:                
+                self.current_eye_target_x=25.0+random.random()*10.0-5.0
+                self.current_eye_target_y=25.0+random.random()*10.0-5.0
+                self.current_eye_target_z=(random.random()*10.0+2.0)-6.0           
+                #print(("plip"),self.SNAKE, self.current_focus_target_x,self.current_focus_target_y,self.current_focus_target_z,self.current_eye_target_x,self.current_eye_target_y,self.current_eye_target_z)   
+                      
         if self.TIME % 300==0 and (self.TIME>1000 or self.state==0) and self.snake_cam==0:
             self.current_eye_target_z*=-1
             self.message("Reversed")
@@ -415,10 +422,6 @@ class Testing:
                 self.current_eye_target_x,self.current_eye_target_y,self.current_eye_target_z=self.SNAKE[0]["Location"][0]-2*self.DIR[0],self.SNAKE[0]["Location"][1]-2*self.DIR[1],2
                 self.current_focus_target_x,self.current_focus_target_y,self.current_focus_target_z=self.SNAKE[0]["Location"][0],self.SNAKE[0]["Location"][1],2
                 self.up_x,self.up_y,self.up_z=0,0,1
-            
-            
-        
-
         
         #self.eye_xx=self.eye_xx+(self.SNAKE[0][0]-self.eye_xx)/30
         #self.eye_yy=self.eye_yy+(self.SNAKE[0][1]-self.eye_yy)/30                 
@@ -442,7 +445,6 @@ class Testing:
         if self.TIME % 200==0 and teamFile!=None: 
             self.save()
             
-        
 
 
     def message(self,str):
@@ -452,7 +454,7 @@ class Testing:
     def save(self):    
         self.message("                          saving!")
         print(("saving",teamFile))
-        open(teamFile,"wb").write(pickle.dumps(self.teams))
+        open(teamFile,"wb").write(pickle.dumps(self.teams,protocol=2)) #pickle.dump(your_object, your_file, protocol=2)
 
 
     def set_food_none_callback(self):
@@ -897,9 +899,9 @@ class Testing:
             self.teams["alex"]={"games":[]}
             
             
-        self.CURRENT_TEAM=self.teams.keys()[0]
+        self.CURRENT_TEAM=list(self.teams.keys())[0]
             
-        if teamFile!=None: open(teamFile,"wb").write(pickle.dumps(self.teams))
+        if teamFile!=None: open(teamFile,"wb").write(pickle.dumps(self.teams,protocol=2))   #pickle.dump(your_object, your_file, protocol=2)
             
         
 

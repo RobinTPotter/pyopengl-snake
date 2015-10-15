@@ -39,9 +39,9 @@ lum0=[(zz[1][0]*256)**2+(zz[1][1]*256)**2+(zz[1][2]*256)**2 for zz in z]
 
 lumin=zip(colours.keys(),colours.values(),lum0)
 
-lumin0=sorted(lumin,key=lambda a: a[2])
-lumin=[c[0] for c in sorted(lumin0,key=lambda a: a[2])]
-lumin_no_black=[c[0] for c in sorted(lumin0,key=lambda a: a[2]) if c[2]>100]
+lumin0=sorted(lumin,key=lambda(a): a[2])
+lumin=[c[0] for c in sorted(lumin0,key=lambda(a): a[2])]
+lumin_no_black=[c[0] for c in sorted(lumin0,key=lambda(a): a[2]) if c[2]>100]
 
 
 del(lum0)
