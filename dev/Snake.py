@@ -129,14 +129,15 @@ class Testing:
     DIR=[0,1]
     TIME=0
     
-    WIDTH=640
+    WIDTH=700
     HEIGHT=480
     
-    BEST_RUN=-1
+    BEST_RUN=0
     FOOD=None
     POINTS=0
     SURVIVAL=0
     TIME_OF_LAST_FOOD=-1
+    FOOD_RUN_TICKS=100
     
     TIMES_TURNED=0
     RUNS=0
@@ -314,11 +315,12 @@ class Testing:
                 if self.FOOD[0]==self.SNAKE[0]["Location"][0] and self.FOOD[1]==self.SNAKE[0]["Location"][1]:
                     self.POINTS+=1
                     if self.snake_cam>0: self.POINTS+=1
-                    if self.TIME-self.TIME_OF_LAST_FOOD<10:
+                    print("food",str(self.TIME-self.TIME_OF_LAST_FOOD))
+                    if self.TIME-self.TIME_OF_LAST_FOOD<self.FOOD_RUN_TICKS:
                         self.RUNS+=1
                         self.current_run+=1
                         if self.BEST_RUN<self.current_run: self.BEST_RUN=self.current_run
-                        foodgreeting=" "+["WOW!","TASTEY!","GET SOME!","SUPER!"][random.randint(0,4)]+" "+str(self.current_run)
+                        foodgreeting=" "+["WOW!","TASTEY!","GET SOME!","SUPER!"][random.randint(0,3)]+" "+str(self.current_run)
                     else:
                         self.current_run=0
                         
@@ -701,6 +703,7 @@ class Testing:
                 glScale(5,5,0)
                 self.drawString(str(self.COUNT_DOWN),col=d)
                 glPopMatrix()
+                ##quit count down here?
             
             if self.state==0:   
 
@@ -761,26 +764,90 @@ class Testing:
                         
                     if self.OK_press>0: self.OK_press-=1
                         
-                    glPushMatrix()
+                    count=3
+                    line_break=25
+                    d="green"
+                    if self.TIME % 2<1: d="yellow"
+                    width=14.0
+                                        
+                    
+                    def dothing(thing,D):
+                        glPushMatrix()  
+                        glTranslate(self.WIDTH/2.00-(len(thing)*width/2.0),self.HEIGHT-(count*line_break),0)
+                        
+                        self.drawString(thing,col=D)
+                        glPopMatrix()  
+                          
+                    dothing("GAME OF DRAGONES",d)
+                    count+=1
+                    count+=1
+                    
+          #  str(len(games)).rjust(p)+tr(totpoints).rjust(p) + str(totsurvival).rjust(p)  +  str(numsnakecamdeaths).rjust(p)  +    str(totalruns).rjust(p)       +        str(bestrun).rjust(p)            ,col=d)
+                                
+                    padding=4
+ 
+                    dothing("TEAM".ljust(10)+"GMS".rjust(padding)+"SVL".rjust(padding)+"SCD".rjust(padding)+"TRS".rjust(padding),d)
+                    
+                    count+=1
+                    count+=1
+                    
+                    if self.teams!=None:
+                        for t in self.teams.keys():
+                            #print(("team:",t))
+                            dc=d
+                            
+                            if t==self.CURRENT_TEAM:
+                                dc="white"
+                                
+                                
+                            try:
+                                games=self.teams[t]["games"]
+                                totpoints=sum([g["PT"] for g in games])
+                                totsurvival=sum([g["SV"] for g in games])
+                                numsnakecamdeaths=len( [ g for g in games if g["DSC"]==True ] )
+                                totalruns=sum([g["CR"] for g in games])
+                                brs=[ g["BR"] for g in games] 
+                                bestrun=0
+                                if len(brs)>0: bestrun=max( brs)                                
+                                dothing(t.ljust(10)+str(len(games)).rjust(padding)+str(totsurvival).rjust(padding)+str(numsnakecamdeaths).rjust(padding)+str(totalruns).rjust(padding),dc)
+                                count+=1
+                            except Exception as e:
+                                print("bollocks",e)
+                                pass
+                                
+                            
+                    
+                    
+
+
+                    '''
+                        
+                        
+                    glPushMatrix()  #
                     
                     d="green"
                     if self.TIME % 2<1: d="yellow"
                     
                     
                     offset = -160
-                    glPushMatrix()                    
+                    line_break=20
+                    current_line=0
                     
-                    glTranslate(self.WIDTH/2,self.HEIGHT/2,0)
+                    glPushMatrix()     ##               
+                    
+                    #glTranslate(self.WIDTH/2,self.HEIGHT/2,0)
 
                     glScale(3,2,0)
-                    glTranslate(offset,10*(float(len(self.teams))+4)/2,0)
                     
+                    #glTranslate(offset,10*(float(len(self.teams))+4)/2,0)
                     
-                    self.drawString("   GAME OF DRAGONES     ",col=d)
+                    do_thing="GAME OF DRAGONES"
+                    glTranslate(len(do_thing)*3*10,current_line*line_break-)
+                    self.drawString(do_thing,col=d)
                     #glTranslate(-10,-20,0)
-                    glTranslate(0,-14,0)
-                    glTranslate(0,-14,0)
-                    glTranslate(0,-14,0)
+                    #glTranslate(0,-14,0)
+                    #glTranslate(0,-14,0)
+                    #glTranslate(0,-14,0)
                     
                     if self.teams!=None:
                         for t in self.teams.keys():
@@ -788,17 +855,17 @@ class Testing:
                             glTranslate(0,-14,0)
                             dc=d
                             if t==self.CURRENT_TEAM: dc="white"
-                            self.drawString(   t.ljust(20)        ,col=dc)
+                            self.drawString(   t.ljust(10)        ,col=dc)
                             
                     
-                    glPopMatrix()
+                    glPopMatrix()##
                     
                     
                     
                     
                     
                     
-                    glPushMatrix()                    
+                    glPushMatrix()   ##                 
                     
                     glTranslate(self.WIDTH/2,self.HEIGHT/2,0)
 
@@ -813,7 +880,7 @@ class Testing:
                     glTranslate(0,-14,0)
                     p=4
                     
-                    self.drawString(        " ".ljust(16)   +   str("Gms").rjust(p)       +   str("PT").rjust(p)      +         str("SV").rjust(p)    +   str("SCD").rjust(p)          +     str("RNS").rjust(p)        +   str("BR").rjust(p)        ,col=d)
+                    self.drawString(        " ".ljust(10)   +   str("Gms").rjust(p)       +   str("PT").rjust(p)      +         str("SV").rjust(p)    +   str("SCD").rjust(p)          +     str("RNS").rjust(p)        +   str("BR").rjust(p)        ,col=d)
                     
                     glTranslate(0,-14,0)
                     
@@ -832,12 +899,12 @@ class Testing:
                                 bestrun=max( [ g["BR"] for g in games] )
                                 
                             
-                                self.drawString(" ".ljust(16)   +   str(len(games)).rjust(p)   +   str(totpoints).rjust(p)   + str(totsurvival).rjust(p)  +  str(numsnakecamdeaths).rjust(p)  +    str(totalruns).rjust(p)       +        str(bestrun).rjust(p)            ,col=d)
+                                self.drawString(" ".ljust(10)   +   str(len(games)).rjust(p)   +   str(totpoints).rjust(p)   + str(totsurvival).rjust(p)  +  str(numsnakecamdeaths).rjust(p)  +    str(totalruns).rjust(p)       +        str(bestrun).rjust(p)            ,col=d)
                                 
                             except:
                                 pass
                     
-                    glPopMatrix()
+                    glPopMatrix()##
                     
                     
                     
@@ -845,7 +912,9 @@ class Testing:
                     
                     
 
-                    glPopMatrix()
+                    glPopMatrix()#
+                    '''
+
 
             
             
