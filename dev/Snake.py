@@ -132,9 +132,14 @@ class Testing:
     WIDTH=640
     HEIGHT=480
     
+    BEST_RUN=-1
     FOOD=None
     POINTS=0
     SURVIVAL=0
+    TIME_OF_LAST_FOOD=-1
+    
+    TIMES_TURNED=0
+    RUNS=0
     
     Eaten=False
     
@@ -147,7 +152,7 @@ class Testing:
     focus_xx,focus_yy,focus_zz=SIZE[0]/2,SIZE[1]/2,0
     up_x,up_y,up_z=0,1,0
     
-    
+    current_run=0
     CURRENT_TEAM=""
     
     COUNT_DOWN=0
@@ -201,6 +206,12 @@ class Testing:
         self.barriergrowers.append(BarrierGrowth(self.LEVEL,x=15,y=15,t=180,dx=1,dy=0,len=30,speed=5))
     
         self.current_eye_target_z=abs(self.current_eye_target_z)
+        
+        self.BEST_RUN=-1
+        self.TIME_OF_LAST_FOOD=-1
+        self.current_run=0
+        self.RUNS=0 
+        self.TIMES_TURNED=0 #number of times changed direction
         self.FOOD=None
         self.POINTS=0
         self.SURVIVAL=0
@@ -297,12 +308,25 @@ class Testing:
                         
                     self.FOOD=[fx,fy]
                     
+                foodgreeting=""    
                 #food encountered
                 #increment and set food to None
                 if self.FOOD[0]==self.SNAKE[0]["Location"][0] and self.FOOD[1]==self.SNAKE[0]["Location"][1]:
                     self.POINTS+=1
                     if self.snake_cam>0: self.POINTS+=1
-                    self.message("nom!... nom...!!")
+                    if self.TIME-self.TIME_OF_LAST_FOOD<10:
+                        self.RUNS+=1
+                        self.current_run+=1
+                        if self.BEST_RUN<self.current_run: self.BEST_RUN=self.current_run
+                        foodgreeting=" "+["WOW!","TASTEY!","GET SOME!","SUPER!"][random.randint(0,4)]+" "+str(self.current_run)
+                    else:
+                        self.current_run=0
+                        
+                    self.message("nom!... nom...!!"+foodgreeting)
+                        
+                    
+                    self.TIME_OF_LAST_FOOD=self.TIME
+                    
                     self.FOOD=None
                 
                 #Ok_press means button is ok to press,
@@ -316,22 +340,28 @@ class Testing:
                     if self.snake_cam==0:
                         if self.joystick.isUp() and not self.DIR==[0,-1]:
                             self.DIR=[0,1]
+                            self.TIMES_TURNED+=1
                         elif self.joystick.isDown() and not self.DIR==[0,1]:
                             self.DIR=[0,-1]
+                            self.TIMES_TURNED+=1
                         elif self.joystick.isLeft() and not self.DIR==[1,0]:
                             self.DIR=[-1,0]
+                            self.TIMES_TURNED+=1
                         elif self.joystick.isRight() and not self.DIR==[-1,0]:
                             self.DIR=[1,0]
+                            self.TIMES_TURNED+=1
                             
                     #snake cam!        
                     else:
                         if self.joystick.isLeft():
                             tmp=[-self.DIR[1],self.DIR[0]]
                             self.DIR=tmp
+                            self.TIMES_TURNED+=1
                             self.OK_press=2
                         elif self.joystick.isRight():
                             tmp=[self.DIR[1],-self.DIR[0]]
                             self.DIR=tmp
+                            self.TIMES_TURNED+=1
                             self.OK_press=2
                         
                 #assuming wasn't ok to press, decrease the ok to press counter
@@ -371,6 +401,15 @@ class Testing:
         
             if self.joystick.isFire() and self.state==0:
                 self.start()
+                
+            if self.joystick.isUp() and self.state==0:
+                self.SELECTMODE=True
+                
+            if self.joystick.isDown() and self.state==0:
+                self.SELECTMODE=True
+                
+                
+                
 
             #print(self.TIME)
             
@@ -461,13 +500,16 @@ class Testing:
         self.FOOD=None
 
     def Dead(self):
-        #PT points
-        #SV survival time
-        #DSC died during snake cam
+        #PT points - people eaten
+        #SV survival time from self.SURVIVAL -- "seconds" played
+        #DSC died during snake cam - True/False
+        #TT times changed direction
+        #CR number of runs
+        #BR best run
         
-        self.teams[self.CURRENT_TEAM]["games"].append({"PT": self.POINTS, "SV": self.SURVIVAL, "DSC": self.snake_cam>0})
-        print (("hello",sum([g["PT"] for g in self.teams[self.CURRENT_TEAM]["games"]]),[g["PT"] for g in self.teams[self.CURRENT_TEAM]["games"]]))
-        self.teams[self.CURRENT_TEAM]["PT"]=sum([g["PT"] for g in self.teams[self.CURRENT_TEAM]["games"]])
+        self.teams[self.CURRENT_TEAM]["games"].append({"PT": self.POINTS, "SV": self.SURVIVAL, "DSC": self.snake_cam>0, "TT": self.TIMES_TURNED, "CR": self.RUNS, "BR": self.BEST_RUN})
+        #print (("hello",sum([g["PT"] for g in self.teams[self.CURRENT_TEAM]["games"]]),[g["PT"] for g in self.teams[self.CURRENT_TEAM]["games"]]))
+        #self.teams[self.CURRENT_TEAM]["PT"]=sum([g["PT"] for g in self.teams[self.CURRENT_TEAM]["games"]])
     
     
         self.save()
@@ -725,7 +767,7 @@ class Testing:
                     if self.TIME % 2<1: d="yellow"
                     
                     
-                    offset = -180
+                    offset = -160
                     glPushMatrix()                    
                     
                     glTranslate(self.WIDTH/2,self.HEIGHT/2,0)
@@ -734,7 +776,7 @@ class Testing:
                     glTranslate(offset,10*(float(len(self.teams))+4)/2,0)
                     
                     
-                    self.drawString("     GAME OF DRAGONES     ",col=d)
+                    self.drawString("   GAME OF DRAGONES     ",col=d)
                     #glTranslate(-10,-20,0)
                     glTranslate(0,-14,0)
                     glTranslate(0,-14,0)
@@ -763,11 +805,15 @@ class Testing:
                     glScale(1,2,0)
                     glTranslate(offset,10*(float(len(self.teams))+4)/2,0)
                     
+                    ##        self.teams[self.CURRENT_TEAM]["games"].append({"PT": self.POINTS, "SV": self.SURVIVAL, "DSC": self.snake_cam>0, "TT": self.TIMES_TURNED, "CR": self.RUNS, "BR": self.BEST_RUN})
+                    
                     
                     #glTranslate(-10,-20,0)
                     glTranslate(0,-14,0)
                     glTranslate(0,-14,0)
-                    self.drawString(   " ".ljust(20)   +   str("Gms").rjust(5)      +   str("Tot").rjust(5)      +   str("Avg").rjust(5)     +   str("Tm.").rjust(5)        +   str("Bl.").rjust(5)        +   str("Bl.").rjust(5)        ,col=d)
+                    p=4
+                    
+                    self.drawString(        " ".ljust(16)   +   str("Gms").rjust(p)       +   str("PT").rjust(p)      +         str("SV").rjust(p)    +   str("SCD").rjust(p)          +     str("RNS").rjust(p)        +   str("BR").rjust(p)        ,col=d)
                     
                     glTranslate(0,-14,0)
                     
@@ -776,7 +822,20 @@ class Testing:
                         for t in self.teams.keys():
                             #print(("team:",t))
                             glTranslate(0,-14,0)
-                            self.drawString(   " ".ljust(20)   +   str(len(self.teams[t]["games"])).rjust(5)      +   str(2).rjust(5)      +   str(3).rjust(5)     +   str(4).rjust(5)       +   str(4).rjust(5)       +   str(4).rjust(5)        ,col=d)
+                            
+                            try:
+                                games=self.teams[t]["games"]
+                                totpoints=sum([g["PT"] for g in games])
+                                totsurvival=sum([g["SV"] for g in games])
+                                numsnakecamdeaths=len( [ g for g in games if g["DSC"]==True ] )
+                                totalruns=sum([g["CR"] for g in games])
+                                bestrun=max( [ g["BR"] for g in games] )
+                                
+                            
+                                self.drawString(" ".ljust(16)   +   str(len(games)).rjust(p)   +   str(totpoints).rjust(p)   + str(totsurvival).rjust(p)  +  str(numsnakecamdeaths).rjust(p)  +    str(totalruns).rjust(p)       +        str(bestrun).rjust(p)            ,col=d)
+                                
+                            except:
+                                pass
                     
                     glPopMatrix()
                     
