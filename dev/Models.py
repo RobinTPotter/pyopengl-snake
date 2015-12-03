@@ -132,11 +132,33 @@ def MakeLists():
     glEnd()
     glEndList()
 
+    
+
     lists["-"] = glGenLists(1) 
     glNewList(lists["-"],GL_COMPILE)
     glBegin(GL_LINE_STRIP)
     glVertex2f(0.5, 5.0)
     glVertex2f(9.5, 5.0) 
+    glEnd()
+    glEndList()
+
+    lists["*"] = glGenLists(1) 
+    glNewList(lists["*"],GL_COMPILE)
+    glBegin(GL_LINES)
+    glVertex2f(5.0, 0.0)
+    glVertex2f(5.0, 10.0) 
+    
+    glVertex2f(0.0, 5.0)
+    glVertex2f(10.0, 5.0) 
+    
+    glVertex2f(0.0, 10.0)
+    glVertex2f(10.0, 0.0) 
+    
+    glVertex2f(10.0, 10.0)
+    glVertex2f(0.0, 0.0) 
+    
+    
+    
     glEnd()
     glEndList()
 

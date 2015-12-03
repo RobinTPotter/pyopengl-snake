@@ -250,7 +250,7 @@ class Testing:
 
         self.current_eye_target_z=abs(self.current_eye_target_z)
 
-        self.BEST_RUN=-1
+        self.BEST_RUN=0
         self.TIME_OF_LAST_FOOD=-1
         self.current_run=0
         self.RUNS=0
@@ -437,10 +437,21 @@ class Testing:
                     if b==self.SNAKE[0]["Location"]:
                         self.Dead()
 
-            else:                
+            else:      
+                if self.joystick.isFire():
+                    #cancelled
+                    self.state=0
+                    self.COUNT_DOWN=0
+                    
                 if self.TIME % 7 ==0:
                     print(("counter",str(self.TIME % 200), " ",str(self.TIME % 300)," ",str(self.TIME) ))
                     self.COUNT_DOWN-=1
+                    if self.COUNT_DOWN==0:
+                        self.teams[self.CURRENT_TEAM]["remaining"]-=1
+                        if self.teams[self.CURRENT_TEAM]["remaining"]==0: 
+                            print((self.CURRENT_TEAM,"no more goes"))
+                            self.teams[self.CURRENT_TEAM]["enabled"]=False
+                        
                 
 
             for bg in self.barriergrowers:
@@ -568,6 +579,7 @@ class Testing:
         self.state=0
 
     def reshape(self,width,height):
+    
         print("hello reshape "+str((width,height)))
         self.HEIGHT=float(height)
         self.WIDTH=float(width)
@@ -578,8 +590,30 @@ class Testing:
         glMatrixMode(GL_MODELVIEW)
         #glPushMatrix()
         glLoadIdentity()
+        
+
+    def teamup(self):
+    
+        self.OK_press=5
+        index=self.teams.keys().index(self.CURRENT_TEAM)
+        index-=1
+        if index<0: index=len(self.teams)-1
+        self.CURRENT_TEAM=self.teams.keys()[index]
+        self.message(self.CURRENT_TEAM+" ready!")
+        if self.teams[self.CURRENT_TEAM]["enabled"]==False: self.teamup()
 
 
+    def teamdown(self):
+    
+        self.OK_press=5
+        index=self.teams.keys().index(self.CURRENT_TEAM)
+        index+=1
+        if index>=len(self.teams): index=0
+        self.CURRENT_TEAM=self.teams.keys()[index]
+        self.message(self.CURRENT_TEAM+" ready!")
+        if self.teams[self.CURRENT_TEAM]["enabled"]==False: self.teamdown()
+        
+        
 
     def draw(self):
 
@@ -809,21 +843,9 @@ class Testing:
 
                     ##UP/DOWN SELECTION OF TEAMS
                     
-                    if self.joystick.isUp() and self.OK_press==0:
-                        self.OK_press=5
-                        index=self.teams.keys().index(self.CURRENT_TEAM)
-                        index-=1
-                        if index<0: index=len(self.teams)-1
-                        self.CURRENT_TEAM=self.teams.keys()[index]
-                        self.message(self.CURRENT_TEAM+" ready!")
+                    if self.joystick.isUp() and self.OK_press==0: self.teamup()
 
-                    if self.joystick.isDown() and self.OK_press==0:
-                        self.OK_press=5
-                        index=self.teams.keys().index(self.CURRENT_TEAM)
-                        index+=1
-                        if index>=len(self.teams): index=0
-                        self.CURRENT_TEAM=self.teams.keys()[index]
-                        self.message(self.CURRENT_TEAM+" ready!")
+                    if self.joystick.isDown() and self.OK_press==0: self.teamdown()
 
                     ##COUNTER FOR AVOIDING HIGH SPEED KEY PRESS
                     if self.OK_press>0: self.OK_press-=1
@@ -851,11 +873,14 @@ class Testing:
                     padding=4
 
                     ##DRAW SCORE HEADINGS
-                    dothing("TEAM".ljust(10)+"GMS".rjust(padding)+"SVL".rjust(padding)+"SCD".rjust(padding)+"TRS".rjust(padding)+"BR".rjust(padding),d)
+                    dothing("   "+"TEAM".ljust(10)+"GMS".rjust(padding)+"SVL".rjust(padding)+"SCD".rjust(padding)+"TRS".rjust(padding)+"BR".rjust(padding)+"SC".rjust(padding),d)
                     count+=1
                     count+=1
 
                     ##SCORES AND TEAM NAMES
+                    
+                    
+                    
                     if self.teams!=None:
                         for t in self.teams.keys():
                             #print(("team:",t))
@@ -875,11 +900,17 @@ class Testing:
                                 brs=[ g["BR"] for g in games]
                                 bestrun=0
                                 if len(brs)>0: bestrun=max( brs)
-                                dothing(t.ljust(10)+str(len(games)).rjust(padding)+str(totsurvival).rjust(padding)+str(numsnakecamdeaths).rjust(padding)+str(totalruns).rjust(padding)+str(bestrun).rjust(padding)          ,dc)
+                                score=0
+                                if len(games)>0: score=totpoints*10+bestrun*10-numsnakecamdeaths+totalruns+(totsurvival/len(games))
+                          
+                                dothing(("***"[0:int(self.teams[t]["remaining"])].rjust(3))+t.ljust(10)+str(len(games)).rjust(padding)+str(totsurvival).rjust(padding)+str(numsnakecamdeaths).rjust(padding)+str(totalruns).rjust(padding)+str(bestrun).rjust(padding)+str(score).rjust(padding)          ,dc)
                                 count+=1
                             except Exception as e:
                                 print("bollocks",e)
                                 pass
+                                
+                                
+                                
 
 
             glColor(cc)
@@ -960,7 +991,7 @@ class Testing:
                     else:
                         if len(t)>0 and line>1:
                             print(t)
-                            self.teams[t]={"games":[]}
+                            self.teams[t]={"games":[], "remaining": 2, "enabled":True}
 
             except Exception as e:
                 print("dor?")
