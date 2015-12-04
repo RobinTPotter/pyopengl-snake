@@ -713,7 +713,10 @@ class Testing:
                     glScale(0.5,0.5,0.5)
                     glTranslate(-2,0,0)
                     #neck bit                   
-                    if t!=True: self.cheapModel[1].drawMe(actually=False)
+                    if t!=True:
+                        self.cheapModel[1].drawMe(actually=False)
+                    else:
+                        self.cheapModel[5].drawMe(actually=False)                        
                     glPopMatrix()
                     lastdrawn="neck"
                 elif num==middle:
@@ -740,7 +743,10 @@ class Testing:
                     glScale(0.5,0.5,0.5)
                     glTranslate(2,0,0)
                     #abdomen
-                    if t!=True: self.cheapModel[3].drawMe(actually=False)
+                    if t!=True:
+                        self.cheapModel[3].drawMe(actually=False)
+                    else:
+                        self.cheapModel[5].drawMe(actually=False)   
                     glPopMatrix()
                     lastdrawn="abdom"
                     
@@ -1055,6 +1061,7 @@ class Testing:
         self.cheapModel.append(Model("models/piece3.dat"))
         self.cheapModel.append(Model("models/piece4.dat"))
         self.cheapModel.append(Model("models/piece5.dat"))
+        self.cheapModel.append(Model("models/piece6.dat"))
         self.chap=Model("models/chap.dat")
 
         glutIgnoreKeyRepeat(1)
