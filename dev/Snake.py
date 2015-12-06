@@ -12,6 +12,7 @@ import array, struct
 import pickle
 
 import sys, traceback
+import operator 
 
 print(lumin_no_black)
 
@@ -19,7 +20,7 @@ from CheapModel import Model
 
 X=46.0
 
-name = b'testing'
+name = b'game of dragones'
 
 class Joystick:
 
@@ -180,6 +181,7 @@ class Testing:
     SELECTMODE=True
     Eaten=False
 
+
     #number of ticks which elapse before the snake grows
     #actually the snake doesn't grow it, it just  doesn't
     #loose a brick from the end
@@ -229,6 +231,9 @@ class Testing:
     message_timer=0
 
     def start(self,yes=None):
+
+
+        if self.teams[self.CURRENT_TEAM]["enabled"]==False: return 
 
         if yes==None: self.LEVEL=[]
 
@@ -568,14 +573,9 @@ class Testing:
         #TT times changed direction
         #CR number of runs
         #BR best run
-
         self.teams[self.CURRENT_TEAM]["games"].append({"PT": self.POINTS, "SV": self.SURVIVAL, "DSC": self.snake_cam>0, "TT": self.TIMES_TURNED, "CR": self.RUNS, "BR": self.BEST_RUN})
-        #print (("hello",sum([g["PT"] for g in self.teams[self.CURRENT_TEAM]["games"]]),[g["PT"] for g in self.teams[self.CURRENT_TEAM]["games"]]))
-        #self.teams[self.CURRENT_TEAM]["PT"]=sum([g["PT"] for g in self.teams[self.CURRENT_TEAM]["games"]])
-
-
+        self.teamdown()
         self.save()
-
         self.state=0
 
     def reshape(self,width,height):
@@ -592,36 +592,37 @@ class Testing:
         glLoadIdentity()
         
 
-    def teamup(self):
-    
+    def teamup(self):    
         self.OK_press=5
         index=self.teams.keys().index(self.CURRENT_TEAM)
         index-=1
         if index<0: index=len(self.teams)-1
         self.CURRENT_TEAM=self.teams.keys()[index]
         self.message(self.CURRENT_TEAM+" ready!")
-        if self.teams[self.CURRENT_TEAM]["enabled"]==False: self.teamup()
-
+        if self.teams[self.CURRENT_TEAM]["enabled"]==False:
+            num=len([self.teams[x]["enabled"] for x in self.teams.keys() if self.teams[x]["enabled"]==True])
+            print(num)
+            if num>0:
+                self.teamup()
 
     def teamdown(self):
-    
         self.OK_press=5
         index=self.teams.keys().index(self.CURRENT_TEAM)
         index+=1
         if index>=len(self.teams): index=0
         self.CURRENT_TEAM=self.teams.keys()[index]
         self.message(self.CURRENT_TEAM+" ready!")
-        if self.teams[self.CURRENT_TEAM]["enabled"]==False: self.teamdown()
-        
-        
+        if self.teams[self.CURRENT_TEAM]["enabled"]==False:
+            num=len([self.teams[x]["enabled"] for x in self.teams.keys() if self.teams[x]["enabled"]==True])
+            print(num)
+            if num>0:
+                self.teamdown()
 
     def draw(self):
 
         self.lock=True
         global X
-
         try:
-
             glMatrixMode(GL_PROJECTION)
             glLoadIdentity()
             gluPerspective(60.0,self.WIDTH/self.HEIGHT,0.001,100.0)
@@ -888,34 +889,50 @@ class Testing:
                     
                     
                     if self.teams!=None:
-                        for t in self.teams.keys():
-                            #print(("team:",t))
-                            dc=d
 
-                            ##SELECTED TEAM PICKED OUT IN WHITE
-                            if t==self.CURRENT_TEAM:
-                                dc="white"
+                        num=len([self.teams[x]["enabled"] for x in self.teams.keys() if self.teams[x]["enabled"]==True])                                
+                        
+                        dc=d
+                                
+                        if num>0:
 
-                            ##DO CALCULATIONS FOR TEAMS' GAMES
-                            try:
-                                games=self.teams[t]["games"]
-                                totpoints=sum([g["PT"] for g in games])
-                                totsurvival=sum([g["SV"] for g in games])
-                                numsnakecamdeaths=len( [ g for g in games if g["DSC"]==True ] )
-                                totalruns=sum([g["CR"] for g in games])
-                                brs=[ g["BR"] for g in games]
-                                bestrun=0
-                                if len(brs)>0: bestrun=max( brs)
-                                score=0
-                                if len(games)>0: score=totpoints*10+bestrun*10-numsnakecamdeaths+totalruns+(totsurvival/len(games))
-                          
-                                dothing(("***"[0:int(self.teams[t]["remaining"])].rjust(3))+t.ljust(10)+str(len(games)).rjust(padding)+str(totsurvival).rjust(padding)+str(numsnakecamdeaths).rjust(padding)+str(totalruns).rjust(padding)+str(bestrun).rjust(padding)+str(score).rjust(padding)          ,dc)
-                                count+=1
-                            except Exception as e:
-                                print("bollocks",e)
-                                pass
-                                
-                                
+                            for t in self.teams.keys():
+                                #print(("team:",t))
+                                dc=d
+
+                                ##SELECTED TEAM PICKED OUT IN WHITE
+                                if t==self.CURRENT_TEAM:
+                                    dc="white"
+
+                                ##DO CALCULATIONS FOR TEAMS' GAMES
+                                try:
+                                    self.calculate(t)
+                                    games,totpoints,totsurvival,numsnakecamdeaths,totalruns,brs,bestrun,score=self.teams[t]["data"]
+                                    dothing(("***"[0:int(self.teams[t]["remaining"])].rjust(3))+t.ljust(10)+str(len(games)).rjust(padding)+str(totsurvival).rjust(padding)+str(numsnakecamdeaths).rjust(padding)+str(totalruns).rjust(padding)+str(bestrun).rjust(padding)+str(score).rjust(padding)          ,dc)
+                                    count+=1
+                                except Exception as e:
+                                    print("bollocks",e)
+                                    pass
+
+                        else:
+                        
+                            list=[(tn,self.teams[tn]["score"]) for tn in self.teams.keys()]
+                            sorted_x = sorted(list, key=operator.itemgetter(1), reverse=True)
+                            print((sorted_x))
+                            for t in [x[0] for x in sorted_x]:
+                            
+                                try:
+                                    ##self.calculate(t)
+                                    games,totpoints,totsurvival,numsnakecamdeaths,totalruns,brs,bestrun,score=self.teams[t]["data"]
+                                    dothing(("***"[0:int(self.teams[t]["remaining"])].rjust(3))+t.ljust(10)+str(len(games)).rjust(padding)+str(totsurvival).rjust(padding)+str(numsnakecamdeaths).rjust(padding)+str(totalruns).rjust(padding)+str(bestrun).rjust(padding)+str(score).rjust(padding)          ,dc)
+                                    count+=1
+                                except Exception as e:
+                                    print("bollocks",e)
+                                    pass
+
+                        
+                        
+                        
                                 
 
 
@@ -930,6 +947,20 @@ class Testing:
         finally:
             self.lock=False
 
+
+    def calculate(self,t):
+        games=self.teams[t]["games"]
+        totpoints=sum([g["PT"] for g in games])
+        totsurvival=sum([g["SV"] for g in games])
+        numsnakecamdeaths=len( [ g for g in games if g["DSC"]==True ] )
+        totalruns=sum([g["CR"] for g in games])
+        brs=[ g["BR"] for g in games]
+        bestrun=0
+        if len(brs)>0: bestrun=max( brs)
+        score=0
+        if len(games)>0: score=totpoints*10+bestrun*10-numsnakecamdeaths+totalruns+(totsurvival/len(games))
+        self.teams[t]["score"]=score
+        self.teams[t]["data"]=(games,totpoints,totsurvival,numsnakecamdeaths,totalruns,brs,bestrun,score)
 
     ##JOYSTICK INITIALIZE KEYS TO RESPOND TO
     def initkey(self,cl):
