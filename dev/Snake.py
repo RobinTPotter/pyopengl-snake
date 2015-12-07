@@ -32,6 +32,7 @@ class Joystick:
     """
 
     up,down,left,right,fire="","","","",""
+    h_key="h"
     keys={}
 
     def __init__(self,up="q",down="a",left="o",right="p",fire="m"):
@@ -56,6 +57,10 @@ class Joystick:
 
     def isRight(self):
         if self.right in self.keys: return self.keys[self.right]
+        else: return False
+
+    def isH(self):
+        if self.h_key in self.keys: return self.keys[self.h_key]
         else: return False
 
     def isFire(self):
@@ -180,7 +185,7 @@ class Testing:
     
     SELECTMODE=True
     Eaten=False
-
+    H_KEY_TIME=0
 
     #number of ticks which elapse before the snake grows
     #actually the snake doesn't grow it, it just  doesn't
@@ -467,6 +472,19 @@ class Testing:
 
         else:
 
+            if self.joystick.isH():
+                print(("buz",self.H_KEY_TIME))
+                self.H_KEY_TIME+=1
+            else:
+                if self.H_KEY_TIME>60:
+                    if self.joystick.isRight():
+                        print(("HKEY GO GO"))
+                        if self.teams[self.CURRENT_TEAM]["enabled"]==False:
+                            self.teams[self.CURRENT_TEAM]["enabled"]=True
+                            self.teams[self.CURRENT_TEAM]["remaining"]=2
+                            
+                self.H_KEY_TIME=0
+
             if self.joystick.isFire() and self.state==0:
                 self.start()
 
@@ -599,11 +617,13 @@ class Testing:
         if index<0: index=len(self.teams)-1
         self.CURRENT_TEAM=self.teams.keys()[index]
         self.message(self.CURRENT_TEAM+" ready!")
-        if self.teams[self.CURRENT_TEAM]["enabled"]==False:
-            num=len([self.teams[x]["enabled"] for x in self.teams.keys() if self.teams[x]["enabled"]==True])
-            print(num)
-            if num>0:
-                self.teamup()
+        
+        if not self.joystick.isH():
+            if self.teams[self.CURRENT_TEAM]["enabled"]==False:
+                num=len([self.teams[x]["enabled"] for x in self.teams.keys() if self.teams[x]["enabled"]==True])
+                print(num)
+                if num>0:
+                    self.teamup()
 
     def teamdown(self):
         self.OK_press=5
@@ -612,11 +632,13 @@ class Testing:
         if index>=len(self.teams): index=0
         self.CURRENT_TEAM=self.teams.keys()[index]
         self.message(self.CURRENT_TEAM+" ready!")
-        if self.teams[self.CURRENT_TEAM]["enabled"]==False:
-            num=len([self.teams[x]["enabled"] for x in self.teams.keys() if self.teams[x]["enabled"]==True])
-            print(num)
-            if num>0:
-                self.teamdown()
+
+        if not self.joystick.isH():
+            if self.teams[self.CURRENT_TEAM]["enabled"]==False:
+                num=len([self.teams[x]["enabled"] for x in self.teams.keys() if self.teams[x]["enabled"]==True])
+                print(num)
+                if num>0:
+                    self.teamdown()
 
     def draw(self):
 
@@ -714,10 +736,8 @@ class Testing:
                     glScale(0.5,0.5,0.5)
                     glTranslate(-2,0,0)
                     #neck bit                   
-                    if t!=True:
-                        self.cheapModel[1].drawMe(actually=False)
-                    else:
-                        self.cheapModel[5].drawMe(actually=False)                        
+                    if t!=True: self.cheapModel[1].drawMe(actually=False)
+                    ##else: self.cheapModel[5].drawMe(actually=False)                        
                     glPopMatrix()
                     lastdrawn="neck"
                 elif num==middle:
@@ -744,10 +764,8 @@ class Testing:
                     glScale(0.5,0.5,0.5)
                     glTranslate(2,0,0)
                     #abdomen
-                    if t!=True:
-                        self.cheapModel[3].drawMe(actually=False)
-                    else:
-                        self.cheapModel[5].drawMe(actually=False)   
+                    if t!=True: self.cheapModel[3].drawMe(actually=False)
+                    ##else: self.cheapModel[5].drawMe(actually=False)   
                     glPopMatrix()
                     lastdrawn="abdom"
                     
@@ -880,7 +898,7 @@ class Testing:
                     padding=4
 
                     ##DRAW SCORE HEADINGS
-                    dothing("   "+"TEAM".ljust(10)+"GMS".rjust(padding)+"SVL".rjust(padding)+"SCD".rjust(padding)+"TRS".rjust(padding)+"BR".rjust(padding)+"SC".rjust(padding),d)
+                    dothing("   "+"TEAM".ljust(10)+"GMS".rjust(padding)+"PTS".rjust(padding)+"SVL".rjust(padding)+"SCD".rjust(padding)+"TRS".rjust(padding)+"BR".rjust(padding)+"SC".rjust(padding),d)
                     count+=1
                     count+=1
 
@@ -908,7 +926,7 @@ class Testing:
                                 try:
                                     self.calculate(t)
                                     games,totpoints,totsurvival,numsnakecamdeaths,totalruns,brs,bestrun,score=self.teams[t]["data"]
-                                    dothing(("***"[0:int(self.teams[t]["remaining"])].rjust(3))+t.ljust(10)+str(len(games)).rjust(padding)+str(totsurvival).rjust(padding)+str(numsnakecamdeaths).rjust(padding)+str(totalruns).rjust(padding)+str(bestrun).rjust(padding)+str(score).rjust(padding)          ,dc)
+                                    dothing(("***"[0:int(self.teams[t]["remaining"])].rjust(3))+t.ljust(10)+str(len(games)).rjust(padding)+str(totpoints).rjust(padding)+str(totsurvival).rjust(padding)+str(numsnakecamdeaths).rjust(padding)+str(totalruns).rjust(padding)+str(bestrun).rjust(padding)+str(score).rjust(padding)          ,dc)
                                     count+=1
                                 except Exception as e:
                                     print("bollocks",e)
@@ -918,13 +936,13 @@ class Testing:
                         
                             list=[(tn,self.teams[tn]["score"]) for tn in self.teams.keys()]
                             sorted_x = sorted(list, key=operator.itemgetter(1), reverse=True)
-                            print((sorted_x))
+                            #print((sorted_x))
                             for t in [x[0] for x in sorted_x]:
                             
                                 try:
                                     ##self.calculate(t)
                                     games,totpoints,totsurvival,numsnakecamdeaths,totalruns,brs,bestrun,score=self.teams[t]["data"]
-                                    dothing(("***"[0:int(self.teams[t]["remaining"])].rjust(3))+t.ljust(10)+str(len(games)).rjust(padding)+str(totsurvival).rjust(padding)+str(numsnakecamdeaths).rjust(padding)+str(totalruns).rjust(padding)+str(bestrun).rjust(padding)+str(score).rjust(padding)          ,dc)
+                                    dothing(("***"[0:int(self.teams[t]["remaining"])].rjust(3))+t.ljust(10)+str(len(games)).rjust(padding)+str(totpoints).rjust(padding)+str(totsurvival).rjust(padding)+str(numsnakecamdeaths).rjust(padding)+str(totalruns).rjust(padding)+str(bestrun).rjust(padding)+str(score).rjust(padding)          ,dc)
                                     count+=1
                                 except Exception as e:
                                     print("bollocks",e)
