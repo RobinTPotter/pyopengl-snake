@@ -488,10 +488,12 @@ class Testing:
             if self.joystick.isFire() and self.state==0:
                 self.start()
 
-            if self.joystick.isUp() and self.state==0:
+            if self.joystick.isUp() and self.state==0 and self.SELECTMODE==False:
+                self.OK_press=8
                 self.SELECTMODE=True
 
-            if self.joystick.isDown() and self.state==0:
+            if self.joystick.isDown() and self.state==0 and self.SELECTMODE==False:
+                self.OK_press=8
                 self.SELECTMODE=True
 
 
